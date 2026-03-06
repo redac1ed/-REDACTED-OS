@@ -5,26 +5,23 @@ import Taskbar from './Taskbar'
 import WindowManager from './WindowManager'
 import CalendarPanel from './CalendarPanel'
 import QuickSettings from './QuickSettings'
-import Calculator from './apps/Calculator'
 import Notepad from './apps/Notepad'
 import FileExplorer from './apps/FileExplorer'
 import Browser from './apps/Browser'
-import Todo from './apps/Todo'
 import Settings from './apps/Settings'
-import Paint from './apps/Paint'
 import Terminal from './apps/Terminal'
+import VSCode from './apps/VSCode'
+import Doom from './apps/Doom'
 
 const DESKTOP_STATE_KEY = 'win11.desktop.state.v1'
 
 const APP_CATALOG = [
   { id: 'explorer', name: 'File Explorer', icon: 'https://img.icons8.com/fluency/48/folder-invoices.png', component: FileExplorer },
   { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
-  { id: 'settings', name: 'Settings', icon: 'https://img.icons8.com/fluency/48/settings.png', component: Settings },
   { id: 'notepad', name: 'Notepad', icon: 'https://img.icons8.com/fluency/48/notepad.png', component: Notepad },
-  { id: 'calculator', name: 'Calculator', icon: 'https://img.icons8.com/fluency/48/calculator.png', component: Calculator },
-  { id: 'todo', name: 'Todo List', icon: 'https://img.icons8.com/fluency/48/checkmark.png', component: Todo },
-  { id: 'paint', name: 'Paint', icon: 'https://img.icons8.com/fluency/48/microsoft-paint.png', component: Paint },
   { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
+  { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
+  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
 ]
 
 const APP_BY_ID = APP_CATALOG.reduce((acc, app) => {

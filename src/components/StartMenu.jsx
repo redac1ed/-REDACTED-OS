@@ -10,6 +10,7 @@ import Paint from './apps/Paint'
 import Terminal from './apps/Terminal'
 import Profile from './apps/Profile'
 import Doom from './apps/Doom'
+import VSCode from './apps/VSCode'
 
 const APPS = [
   { id: 'profile', name: 'Profile', icon: 'https://img.icons8.com/?id=kDoeg22e5jUY&format=png', component: Profile },
@@ -21,7 +22,8 @@ const APPS = [
   { id: 'settings', name: 'Settings', icon: 'https://img.icons8.com/fluency/48/settings.png', component: Settings },
   { id: 'todo', name: 'Todo List', icon: 'https://img.icons8.com/fluency/48/checkmark.png', component: Todo },
   { id: 'paint', name: 'Paint', icon: 'https://img.icons8.com/fluency/48/microsoft-paint.png', component: Paint },
-  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=H6Cs4L4SXAr8&format=png', component: Doom },
+  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
+  { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
 ]
 
 export default function StartMenu({ isOpen, onToggle, onAppClick, onLock }) {

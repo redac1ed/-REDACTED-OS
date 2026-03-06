@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
-  MdArrowBack, MdArrowForward, MdArrowUpward, MdRefresh,
-  MdHome, MdDesktopWindows, MdDownload,
-  MdDescription, MdImage, MdMusicNote, MdMovie, MdComputer,
-  MdAdd, MdContentCut, MdContentCopy, MdContentPaste,
-  MdDriveFileRenameOutline, MdShare, MdDeleteOutline,
-  MdSort, MdViewList, MdFilterList, MdMoreHoriz,
-  MdGridView, MdSearch, MdCheckCircle, MdFolder
+  MdArrowBack, MdArrowForward, MdHome,
+  MdDesktopWindows, MdDownload, MdDescription,
+  MdImage, MdMusicNote, MdMovie, MdComputer,
+  MdGridView, MdSearch, MdFolder, MdChevronRight,
+  MdViewList, MdInsertDriveFile,
 } from 'react-icons/md'
 import { useFileSystem } from '../../contexts/FileSystemContext'
 
@@ -124,7 +122,7 @@ export default function FileExplorer() {
             display: 'flex',
             alignItems: 'center',
             background: 'rgba(255,255,255,0.05)',
-            borderRadius: '4px',
+            borderRadius: '40px',
             padding: '6px 12px',
             fontSize: '13px',
             border: '1px solid rgba(255,255,255,0.05)'
@@ -138,7 +136,7 @@ export default function FileExplorer() {
             display: 'flex',
             alignItems: 'center',
             background: 'rgba(255,255,255,0.05)',
-            borderRadius: '4px',
+            borderRadius: '40px',
             padding: '6px 12px',
             fontSize: '13px',
             border: '1px solid rgba(255,255,255,0.05)'
