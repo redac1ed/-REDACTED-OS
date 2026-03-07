@@ -3,8 +3,7 @@ import {
   MdArrowBack, MdArrowForward, MdHome,
   MdDesktopWindows, MdDownload, MdDescription,
   MdImage, MdMusicNote, MdMovie, MdComputer,
-  MdGridView, MdSearch, MdFolder, MdChevronRight,
-  MdViewList, MdInsertDriveFile,
+  MdSearch, MdFolder, MdCheckCircle
 } from 'react-icons/md'
 import { useFileSystem } from '../../contexts/FileSystemContext'
 
