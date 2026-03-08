@@ -1,59 +1,55 @@
-# Browser proxy mode (Cloudflare Browser Rendering)
+# [REDACTED] OS 
+A type-of portfolio that is represented through a webOS. Made using React.
 
-The in-app browser supports a server-side proxy mode via `api/proxy.js`.
+![35310](https://github.com/user-attachments/assets/950cac1b-5ca4-40c5-ab30-fbc79c744855)
 
-## Optional: Use Cloudflare Browser Rendering (recommended)
+## Features
+- **Customizable UI** with several themes.
+- **Easter Eggs** in various parts of the WebOS.
+- **Working Browser** with no iFrame block.
+- **Games** like Doom.
+- **Animated widgets** like the Start Menu.
+- and much more!
 
-If you configure these environment variables, the proxy will use Cloudflare's `/browser-rendering/content` endpoint first, and fallback to basic fetch if unavailable.
+## Deployment
 
-- `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_API_TOKEN` (must include **Browser Rendering Write** permission)
+### `.env` example
 
-### Vercel env setup
+Create `.env` with:
 
-Add both variables in your Vercel project settings, then redeploy.
+```VITE_BROWSER_URL=url_to_browser```
 
-### Local `.env` example
+### Local
 
-Create `.env` (or `.env.local`) with:
-
-`CLOUDFLARE_ACCOUNT_ID=your_account_id`
-
-`CLOUDFLARE_API_TOKEN=your_token`
-
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Deploying to Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F%5BREDACTED%5D%2F%5BREDACTED%5D-os)
-
-This project is prepared for deployment to [Vercel](https://vercel.com/).
-
-### Deployment Steps:
-1. Connect your GitHub repository to Vercel.
-2. Vercel will automatically detect Vite and set:
-   - **Framework Preset:** `Vite`
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-3. Click **Deploy**.
-
-Alternatively, you can deploy using the Vercel CLI:
+1. Clone the repository:
 ```bash
-npm install -g vercel
-vercel
+git clone https://github.com/redac1ed/-REDACTED-OS.git
+cd -REDACTED-OS
 ```
 
-## React Compiler
+2. Install frontend dependencies:
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. Run the frontend:
+```bash
+npm run dev
+```
+The frontend will be available at `http://localhost:5173`.
 
-## Expanding the ESLint configuration
+### Vercel
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Alternatively, you can deploy it to Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F%5BREDACTED%5D%2F%5BREDACTED%5D-os) 
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Authors
+
+Created by [redac1ed](https://github.com/redac1ed). Special thanks to [rupnil.codes](https://github.com/rupnilcodes) for designs.
+
+
