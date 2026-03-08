@@ -12,6 +12,7 @@ import Settings from './apps/Settings'
 import Terminal from './apps/Terminal'
 import VSCode from './apps/VSCode'
 import Doom from './apps/Doom'
+import LibreOffice from './apps/LibreOffice'
 
 const DESKTOP_STATE_KEY = 'win11.desktop.state.v1'
 
@@ -22,6 +23,7 @@ const APP_CATALOG = [
   { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
   { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
   { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
+  { id: 'libreoffice', name: 'LibreOffice', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg', component: LibreOffice },
 ]
 
 const APP_BY_ID = APP_CATALOG.reduce((acc, app) => {

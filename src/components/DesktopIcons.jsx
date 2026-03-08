@@ -5,6 +5,7 @@ import Browser from './apps/Browser'
 import VSCode from './apps/VSCode'
 import FileExplorer from './apps/FileExplorer'
 import Doom from './apps/Doom'
+import LibreOffice from './apps/LibreOffice'
 
 const INITIAL_APPS = [
   { id: 'explorer', name: 'File Explorer', icon: 'https://img.icons8.com/fluency/48/folder-invoices.png', component: FileExplorer },
@@ -13,6 +14,7 @@ const INITIAL_APPS = [
   { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
   { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
   { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
+  { id: 'libreoffice', name: 'LibreOffice', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg', component: LibreOffice },
 ]
 
 export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPositionsChange = () => {} }) {
