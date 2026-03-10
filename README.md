@@ -19,6 +19,8 @@ Create `.env` with:
 
 ```VITE_BROWSER_URL=url_to_browser```
 
+```VITE_LIBREOFFICE_URL=url_to_libreoffice```
+
 ### Local
 
 1. Clone the repository:
