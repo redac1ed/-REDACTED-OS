@@ -78,7 +78,7 @@ export default function Terminal() {
     return createPortal(
       <div className="mobile-blocker visible">
         <video
-          src="/rm-rfsd-meme.mp4"
+          src="/rm-rf-meme.mp4"
           autoPlay
           loop
           muted
