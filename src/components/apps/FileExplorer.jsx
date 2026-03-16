@@ -3,7 +3,7 @@ import {
   MdArrowBack, MdArrowForward, MdHome,
   MdDesktopWindows, MdDownload, MdDescription,
   MdImage, MdMusicNote, MdMovie, MdComputer,
-  MdSearch, MdFolder, MdCheckCircle
+   MdSearch, MdFolder, MdCheckCircle, MdClose
 } from 'react-icons/md'
 import { useFileSystem } from '../../contexts/FileSystemContext'
 
@@ -53,6 +53,21 @@ export default function FileExplorer() {
   const [history, setHistory] = useState(['Home']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+   const [selectedFile, setSelectedFile] = useState(null);
+
+   const formatPreviewText = (text = '') => {
+      const rawText = String(text).replace(/\r\n/g, '\n');
+      const lines = rawText.split('\n');
+      const nonEmptyLines = lines.filter(line => line.trim().length > 0);
+      const minIndent = nonEmptyLines.length
+         ? Math.min(...nonEmptyLines.map(line => (line.match(/^[ \t]*/) || [''])[0].length))
+         : 0;
+
+      return lines
+         .map(line => line.slice(minIndent))
+         .join('\n')
+         .replace(/^\n+/, '');
+   };
 
   const navigate = (path) => {
     const newHistory = history.slice(0, historyIndex + 1);
@@ -61,17 +76,22 @@ export default function FileExplorer() {
     setHistoryIndex(newHistory.length - 1);
     setCurrentPath(path);
     setSearchQuery('');
+      setSelectedFile(null);
   }
   const goBack = () => {
     if (historyIndex > 0) {
       setHistoryIndex(historyIndex - 1);
       setCurrentPath(history[historyIndex - 1]);
+         setSearchQuery('');
+         setSelectedFile(null);
     }
   }
   const goForward = () => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(historyIndex + 1);
       setCurrentPath(history[historyIndex + 1]);
+         setSearchQuery('');
+         setSelectedFile(null);
     }
   }
   const getBreadcrumbs = () => {
@@ -161,7 +181,7 @@ export default function FileExplorer() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
          
          {/* Sidebar */}
-         <div style={{
+         <div className="file-explorer-sidebar-scroll" style={{
             width: '240px',
             padding: '12px 6px',
             background: '#191919',
@@ -187,7 +207,7 @@ export default function FileExplorer() {
          </div>
          
          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#1c1c1c' }}>
-            <div style={{ flex: 1, padding: '0 24px', overflowY: 'auto' }}>
+            <div className="file-explorer-main-scroll" style={{ flex: 1, padding: '0 24px', overflowY: 'auto' }}>
                
                {currentPath === 'Home' ? (
                    <>
@@ -291,53 +311,133 @@ export default function FileExplorer() {
                    </div>
                    </>
                ) : (
-                   <div style={{ padding: '20px 0' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '16px' }}>
-                            {filteredFiles.length === 0 && <div style={{ opacity: 0.5, padding: '20px' }}>{searchQuery ? 'No results found.' : 'This folder is empty.'}</div>}
-                            {filteredFiles.map((file, i) => (
-                                <div key={i}
+                   <div style={{ padding: '20px 0', display: 'flex', gap: '20px', height: '100%' }}>
+                        <div style={{ flex: 1 }}>
+                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '16px' }}>
+                              {filteredFiles.length === 0 && <div style={{ opacity: 0.5, padding: '20px' }}>{searchQuery ? 'No results found.' : 'This folder is empty.'}</div>}
+                              {filteredFiles.map((file, i) => (
+                                 <div key={i}
                                     onClick={() => {
-                                        if (file.type === 'folder') {
-                                            navigate([...currentPath, file.name]);
-                                        }
+                                       if (file.type === 'folder') {
+                                          navigate([...currentPath, file.name]);
+                                          return;
+                                       }
+
+                                       if (file.type === 'txt' || file.type === 'image') {
+                                          setSelectedFile(file);
+                                       } else {
+                                          setSelectedFile(null);
+                                       }
                                     }}
                                     style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        padding: '12px',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
+                                       display: 'flex',
+                                       flexDirection: 'column',
+                                       alignItems: 'center',
+                                       padding: '12px',
+                                       borderRadius: '4px',
+                                       cursor: 'pointer',
+                                       border: selectedFile?.name === file.name ? '1px solid rgba(79, 172, 254, 0.65)' : '1px solid transparent',
+                                       background: selectedFile?.name === file.name ? 'rgba(79, 172, 254, 0.09)' : 'transparent'
                                     }}
                                     className="file-grid-item"
                                  >
                                     {file.type === 'folder' ? (
-                                        <MdFolder size={48} color="#ffe68e" />
+                                       <MdFolder size={48} color="#ffe68e" />
                                     ) :
                                     file.type === 'video' ? (
-                                        <MdMovie size={48} color="#a18cd1" />
+                                       <MdMovie size={48} color="#a18cd1" />
                                     ) : 
                                     file.type === 'music' ? (
-                                        <MdMusicNote size={48} color="#43e97b" />
+                                       <MdMusicNote size={48} color="#43e97b" />
                                     ) : 
                                     file.type === 'apps' ? (
-                                        <img src={file.icon} width={48} height={48} />
+                                       <img src={file.icon} width={48} height={48} alt={file.name} />
                                     ) : 
                                     file.type === 'doc' ? (
-                                        <MdDescription size={48} color="#4facfe" />
+                                       <MdDescription size={48} color="#4facfe" />
                                     ) : 
                                     file.type === 'txt' ? (
-                                        <MdDescription size={48} color="#5c5c5c" />
+                                       <MdDescription size={48} color="#5c5c5c" />
                                     ) :
                                     file.type === 'image' ? (
-                                        <MdImage size={48} color="#4facfe" />
+                                       <MdImage size={48} color="#4facfe" />
                                     ) : (
-                                        <MdDescription size={48} color="#ccc" />
+                                       <MdDescription size={48} color="#ccc" />
                                     )}
                                     <span style={{ marginTop: '8px', fontSize: '13px', textAlign: 'center', wordBreak: 'break-word' }}>{file.name}</span>
-                                </div>
-                            ))}
+                                 </div>
+                              ))}
+                           </div>
                         </div>
+
+                        {selectedFile && (selectedFile.type === 'txt' || selectedFile.type === 'image') && (
+                           <div style={{
+                              width: '40%',
+                              minWidth: '280px',
+                              maxWidth: '420px',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              borderRadius: '8px',
+                              background: '#151515',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              overflow: 'hidden'
+                           }}>
+                              <div style={{
+                                 display: 'flex',
+                                 alignItems: 'center',
+                                 justifyContent: 'space-between',
+                                 padding: '10px 12px',
+                                 borderBottom: '1px solid rgba(255,255,255,0.08)'
+                              }}>
+                                 <div style={{ fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    Preview · {selectedFile.name}
+                                 </div>
+                                 <button
+                                    className="icon-btn"
+                                    onClick={() => setSelectedFile(null)}
+                                    title="Close preview"
+                                 >
+                                    <MdClose />
+                                 </button>
+                              </div>
+
+                              <div style={{ flex: 1, minHeight: '220px', background: '#101010' }}>
+                                 {selectedFile.type === 'txt' && (
+                                    <div
+                                       className="file-explorer-text-preview-scroll"
+                                       style={{
+                                          width: '100%',
+                                          height: '100%',
+                                          overflow: 'auto',
+                                          padding: '12px',
+                                          background: '#111',
+                                          color: '#f1f1f1',
+                                          fontFamily: 'Consolas, monospace',
+                                          fontSize: '13px',
+                                          whiteSpace: 'pre-wrap',
+                                          wordBreak: 'break-word'
+                                       }}
+                                    >
+                                       {formatPreviewText(selectedFile.content) || 'This text file is empty.'}
+                                    </div>
+                                 )}
+
+                                 {selectedFile.type === 'image' && (
+                                    selectedFile.content ? (
+                                       <img
+                                          src={selectedFile.content}
+                                          alt={selectedFile.name}
+                                          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000' }}
+                                       />
+                                    ) : (
+                                       <div style={{ padding: '14px', fontSize: '12px', opacity: 0.65 }}>
+                                          No image source found. Set <code>content</code> to a URL or data URI.
+                                       </div>
+                                    )
+                                 )}
+                              </div>
+                           </div>
+                        )}
                    </div>
                )}
 
@@ -390,6 +490,32 @@ export default function FileExplorer() {
          }
          .file-list-row:hover {
             background: rgba(255,255,255,0.04);
+         }
+         .file-explorer-sidebar-scroll::-webkit-scrollbar,
+         .file-explorer-main-scroll::-webkit-scrollbar,
+         .file-explorer-text-preview-scroll::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+         }
+         .file-explorer-sidebar-scroll::-webkit-scrollbar-track,
+         .file-explorer-main-scroll::-webkit-scrollbar-track,
+         .file-explorer-text-preview-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+         }
+         .file-explorer-sidebar-scroll::-webkit-scrollbar-thumb,
+         .file-explorer-main-scroll::-webkit-scrollbar-thumb,
+         .file-explorer-text-preview-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(150,150,150,0.8), rgba(95,95,95,0.85));
+            border-radius: 999px;
+            border: 3px solid rgba(0,0,0,0);
+            background-clip: padding-box;
+         }
+         .file-explorer-sidebar-scroll::-webkit-scrollbar-thumb:hover,
+         .file-explorer-main-scroll::-webkit-scrollbar-thumb:hover,
+         .file-explorer-text-preview-scroll::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(190,190,190,0.9), rgba(120,120,120,0.9));
+            border: 3px solid rgba(0,0,0,0);
+            background-clip: padding-box;
          }
       `}</style>
     </div>

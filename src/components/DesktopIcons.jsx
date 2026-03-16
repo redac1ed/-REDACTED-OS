@@ -1,15 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
-import Notepad from './apps/Notepad'
 import Terminal from './apps/Terminal'
 import Browser from './apps/Browser'
 import VSCode from './apps/VSCode'
-import FileExplorer from './apps/FileExplorer'
 import Doom from './apps/Doom'
 import LibreOffice from './apps/LibreOffice'
 import Minecraft from './apps/Minecraft'
 
 const INITIAL_APPS = [
-  { id: 'explorer', name: 'File Explorer', icon: 'https://img.icons8.com/fluency/48/folder-invoices.png', component: FileExplorer },
   { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
   { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
   { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },

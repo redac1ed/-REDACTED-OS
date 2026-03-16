@@ -6,8 +6,6 @@ import WindowManager from './WindowManager'
 import CalendarPanel from './CalendarPanel'
 import QuickSettings from './QuickSettings'
 import ContextMenu from './ContextMenu'
-import Notepad from './apps/Notepad'
-import FileExplorer from './apps/FileExplorer'
 import Browser from './apps/Browser'
 import Settings from './apps/Settings'
 import Terminal from './apps/Terminal'
@@ -19,7 +17,6 @@ import Minecraft from './apps/Minecraft'
 const DESKTOP_STATE_KEY = 'win11.desktop.state.v1'
 
 const APP_CATALOG = [
-  { id: 'explorer', name: 'File Explorer', icon: 'https://img.icons8.com/fluency/48/folder-invoices.png', component: FileExplorer },
   { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
   { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
   { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
