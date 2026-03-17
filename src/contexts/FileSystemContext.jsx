@@ -40,7 +40,7 @@ PS: These apps are pretty heavy, so they might take some time to load.` }
     Downloads: {
       type: 'folder',
       children: {
-        'installer.exe': { type: 'file', content: '' },
+        'installer.exe': { type: 'exe', content: '' },
         'image.png': { type: 'image', content: 'https://i.imgflip.com/a9zzjo.jpg?a492288' }
       }
     },
@@ -53,13 +53,13 @@ PS: These apps are pretty heavy, so they might take some time to load.` }
     Music: {
       type: 'folder',
       children: {
-        'song.mp3': { type: 'music', content: '' }
+        'song.mp3': { type: 'music', content: 'song.mp3' }
       }
     },
     Videos: {
       type: 'folder',
       children: {
-        'rm-rf-meme.mp4': { type: 'video', content: '' }
+        'rm-rf-meme.mp4': { type: 'video', content: 'rm-rf-meme.mp4' }
       }
     }
   }

@@ -16,6 +16,7 @@ export default function UnlockOverlay({ onUnlock, onCancel }) {
     if (loading) return
     if (pin === '6776') {
       setLoading(true)
+      alert('Please check the .txt files in the Documents folder in File Explorer for some important information.')
       setTimeout(onUnlock, 400)
     } else {
       setError('The PIN is incorrect. Hint: Logs.')

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import {
   MdPalette,
   MdMonitor,
@@ -9,7 +9,6 @@ import {
   MdArrowBack,
   MdWallpaper,
   MdColorLens,
-  MdAutoFixHigh,
   MdRestartAlt,
 } from 'react-icons/md'
 import { useUser } from '../../contexts/UserContext'
@@ -347,6 +346,30 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
         .swatch:hover { 
           transform: scale(1.15);
           box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .settings-disabled-item {
+          position: relative;
+          cursor: not-allowed;
+        }
+        .settings-admin-tooltip {
+          position: absolute;
+          right: 12px;
+          top: -34px;
+          background: rgba(20, 20, 20, 0.95);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #fff;
+          font-size: 11px;
+          padding: 6px 8px;
+          border-radius: 8px;
+          white-space: nowrap;
+          pointer-events: none;
+          opacity: 0;
+          visibility: hidden;
+          z-index: 5;
+        }
+        .settings-disabled-item:hover .settings-admin-tooltip {
+          opacity: 1;
+          visibility: visible;
         }
       `}</style>
       {/* Sidebar */}
@@ -816,7 +839,7 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                     <MdKeyboardArrowRight size={20} />
                 </div>
                 <div 
-                  className="settings-panel"
+                  className="settings-panel settings-disabled-item"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: 0.6 }}
                 >
                     <div style={{ display: 'flex', gap: '16px' }}>
@@ -827,9 +850,10 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                       </div>
                     </div>
                     <MdKeyboardArrowRight size={20} />
+                    <span className="settings-admin-tooltip">Disabled by administrator</span>
                 </div>
                 <div 
-                  className="settings-panel"
+                  className="settings-panel settings-disabled-item"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: 0.6 }}
                 >
                     <div style={{ display: 'flex', gap: '16px' }}>
@@ -840,6 +864,7 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                       </div>
                     </div>
                     <MdKeyboardArrowRight size={20} />
+                    <span className="settings-admin-tooltip">Disabled by administrator</span>
                 </div>
               </div>
             )}

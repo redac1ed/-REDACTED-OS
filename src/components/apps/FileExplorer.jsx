@@ -55,6 +55,11 @@ export default function FileExplorer() {
   const [searchQuery, setSearchQuery] = useState('');
    const [selectedFile, setSelectedFile] = useState(null);
 
+   const resolveAssetPath = (path = '') => {
+      if (!path) return '';
+      return path.startsWith('/') ? path : `/${path}`;
+   };
+
    const formatPreviewText = (text = '') => {
       const rawText = String(text).replace(/\r\n/g, '\n');
       const lines = rawText.split('\n');
@@ -323,7 +328,19 @@ export default function FileExplorer() {
                                           return;
                                        }
 
-                                       if (file.type === 'txt' || file.type === 'image') {
+                                       if (file.type === 'apps') {
+                                          alert('Apps can only be opened in the desktop environment.');
+                                          setSelectedFile(null);
+                                          return;
+                                       }
+
+                                       if (file.type === 'exe' || (file.type === 'file' && file.name?.toLowerCase().endsWith('.exe'))) {
+                                          alert('EXE files are disabled in this environment.');
+                                          setSelectedFile(null);
+                                          return;
+                                       }
+
+                                       if (['txt', 'image', 'video', 'music'].includes(file.type)) {
                                           setSelectedFile(file);
                                        } else {
                                           setSelectedFile(null);
@@ -369,8 +386,8 @@ export default function FileExplorer() {
                               ))}
                            </div>
                         </div>
-
-                        {selectedFile && (selectedFile.type === 'txt' || selectedFile.type === 'image') && (
+                        {/* preview funcs */}
+                        {selectedFile && ['txt', 'image', 'video', 'music'].includes(selectedFile.type) && (
                            <div style={{
                               width: '40%',
                               minWidth: '280px',
@@ -400,7 +417,6 @@ export default function FileExplorer() {
                                     <MdClose />
                                  </button>
                               </div>
-
                               <div style={{ flex: 1, minHeight: '220px', background: '#101010' }}>
                                  {selectedFile.type === 'txt' && (
                                     <div
@@ -421,7 +437,6 @@ export default function FileExplorer() {
                                        {formatPreviewText(selectedFile.content) || 'This text file is empty.'}
                                     </div>
                                  )}
-
                                  {selectedFile.type === 'image' && (
                                     selectedFile.content ? (
                                        <img
@@ -434,6 +449,23 @@ export default function FileExplorer() {
                                           No image source found. Set <code>content</code> to a URL or data URI.
                                        </div>
                                     )
+                                 )}
+                                 {selectedFile.type === 'video' && (
+                                    <video
+                                       src={resolveAssetPath(selectedFile.content)}
+                                       controls
+                                       style={{ width: '100%', height: '100%', background: '#000' }}
+                                    />
+                                 )}
+
+                                 {selectedFile.type === 'music' && (
+                                    <div style={{ padding: 16 }}>
+                                       <audio
+                                          src={resolveAssetPath(selectedFile.content)}
+                                          controls
+                                          style={{ width: '100%' }}
+                                       />
+                                    </div>
                                  )}
                               </div>
                            </div>
