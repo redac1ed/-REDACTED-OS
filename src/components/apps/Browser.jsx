@@ -6,7 +6,7 @@ export default function Browser() {
   const [loading, setLoading] = useState(false)
   const handleSubmit = async () => {
     setLoading(true)
-    const res = await fetch(`http://127.0.0.1:5000/api/browser-proxy?url=${encodeURIComponent(inputUrl)}`)
+    const res = await fetch(`/api/browser-proxy?url=${encodeURIComponent(inputUrl)}`)
     const data = await res.json()
     if (data?.url) {
       setIframeUrl(data.url)
