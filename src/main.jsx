@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Analytics } from "@vercel/analytics/react"
 import './index.css'
@@ -7,17 +7,22 @@ import { UserProvider } from './contexts/UserContext'
 import { FileSystemProvider } from './contexts/FileSystemContext'
 import MobileBlocker from './components/MobileBlocker'
 
+// Register service worker for caching
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch((err) => {
+    console.log('Service Worker registration failed:', err)
+  })
+}
+
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <UserProvider>
-      <FileSystemProvider>
-        <MobileDetectWrapper>
-          <App />
-          <Analytics />
-        </MobileDetectWrapper>
-      </FileSystemProvider>
-    </UserProvider>
-  </StrictMode>,
+  <UserProvider>
+    <FileSystemProvider>
+      <MobileDetectWrapper>
+        <App />
+        <Analytics />
+      </MobileDetectWrapper>
+    </FileSystemProvider>
+  </UserProvider>,
 )
 
 // Wrapper to block mobile devices

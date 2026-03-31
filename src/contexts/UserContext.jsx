@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import { createContext, useContext, useMemo, useState, useEffect } from 'react';
 
 const UserContext = createContext();
-
 const STORAGE_KEYS = {
   THEME: 'os.theme.v2',
   CUSTOM: 'os.custom-theme.v2',
@@ -10,7 +9,6 @@ const STORAGE_KEYS = {
   BRIGHTNESS: 'os.display.brightness.v1',
   NIGHT_LIGHT: 'os.display.nightlight.v1',
 };
-
 const defaultThemes = {
   dark: {
     name: 'Midnight Glass',

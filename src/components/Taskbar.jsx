@@ -1,5 +1,24 @@
-import { useState, useEffect } from 'react'
-import { MdWifi, MdVolumeUp } from 'react-icons/md'
+import { useState, useEffect, useRef } from 'react'
+import {
+  MdVolumeUp,
+  MdBattery0Bar,
+  MdBattery1Bar,
+  MdBattery2Bar,
+  MdBattery3Bar,
+  MdBattery4Bar,
+  MdBattery5Bar,
+  MdBattery6Bar,
+  MdBatteryCharging20,
+  MdBatteryCharging50,
+  MdBatteryCharging80,
+  MdBatteryCharging90,
+  MdSignalWifi0Bar,
+  MdSignalWifi1Bar,
+  MdSignalWifi2Bar,
+  MdSignalWifi3Bar,
+  MdSignalWifi4Bar,
+  MdSignalWifiOff,
+} from 'react-icons/md'
 export default function Taskbar({
   onStartClick,
   onQuickSettingsClick,
@@ -17,39 +36,95 @@ export default function Taskbar({
   const [time, setTime] = useState(new Date())
   const [wifiName, setWifiName] = useState('WiFi')
   const [draggedApp, setDraggedApp] = useState(null)
-
+  const [hoveredAppKey, setHoveredAppKey] = useState(null)
+  const [wifiLevel, setWifiLevel] = useState('high') 
+  const wasOnlineRef = useRef(navigator.onLine)
+  const getWifiLevelFromConnection = () => {
+    if (!navigator.onLine) return 'off'
+    const conn = navigator.connection
+    if (!conn) return 'high'
+    const downlink = conn.downlink ?? 0
+    if (downlink < 1) return 'zero'
+    if (downlink < 5) return 'low'
+    if (downlink < 20) return 'high'
+    return 'full'
+  }
+  const runWifiStartupSequence = async (finalLevel) => {
+    const seq = ['zero', 'low', 'high', 'full']
+    for (const step of seq) {
+      setWifiLevel(step)
+      await new Promise((r) => setTimeout(r, 140))
+    }
+    setWifiLevel(finalLevel)
+  }
+  const wifiIconMap = {
+    off: MdSignalWifiOff,
+    zero: MdSignalWifi0Bar,
+    low: MdSignalWifi1Bar,
+    high: MdSignalWifi3Bar,
+    full: MdSignalWifi4Bar,
+  }
+  const WifiTrayIcon = wifiIconMap[wifiLevel] || MdSignalWifi2Bar
+  const VolumeTrayIcon = MdVolumeUp
+  const level = battery?.level ?? 100
+  const BatteryTrayIcon = battery?.charging
+    ? level <= 25
+      ? MdBatteryCharging20
+      : level <= 60
+        ? MdBatteryCharging50
+        : level <= 85
+          ? MdBatteryCharging80
+          : MdBatteryCharging90
+    : level <= 5
+      ? MdBattery0Bar
+      : level <= 20
+        ? MdBattery1Bar
+        : level <= 35
+          ? MdBattery2Bar
+          : level <= 50
+            ? MdBattery3Bar
+            : level <= 70
+              ? MdBattery4Bar
+              : level <= 90
+                ? MdBattery5Bar
+                : MdBattery6Bar
   useEffect(() => {
     if ('connection' in navigator) {
-       const conn = navigator.connection;
-       if(conn.type === 'wifi') {
+      const conn = navigator.connection;
+        if(conn.type === 'wifi') {
           setWifiName('WiFi'); 
-       } else if(conn.type === 'cellular') {
+        } else if(conn.type === 'cellular') {
           setWifiName('Cellular');
-       } else if (conn.type === 'ethernet') {
+        } else if (conn.type === 'ethernet') {
           setWifiName('Ethernet');
-       } else {
+        } else {
          setWifiName('Connected');
-       }
-       
-       const updateConnection = () => {
-          if(navigator.onLine) {
-            setWifiName('Connected');
-          } else {
-            setWifiName('No Internet');
-          }
-       }
-
+      }
+      const updateConnection = async () => {
+        if (!navigator.onLine) {
+          setWifiName('No Internet')
+          setWifiLevel('off')
+          wasOnlineRef.current = false
+          return
+        }
+        setWifiName('Connected')
+        const finalLevel = getWifiLevelFromConnection()
+        if (!wasOnlineRef.current) {
+          await runWifiStartupSequence(finalLevel) 
+        } else {
+          setWifiLevel(finalLevel)
+        }
+        wasOnlineRef.current = true
+      }
        conn.addEventListener('change', updateConnection);
        window.addEventListener('online', updateConnection);
        window.addEventListener('offline', updateConnection);
-
        return () => {
          conn.removeEventListener('change', updateConnection);
          window.removeEventListener('online', updateConnection);
          window.removeEventListener('offline', updateConnection);
        }
     } else {
-        // Fallback for browsers without navigator.connection
         const updateOnlineStatus = () => setWifiName(navigator.onLine ? 'Connected' : 'No Internet');
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
@@ -60,7 +135,6 @@ export default function Taskbar({
         }
     }
   }, [])
-
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(timer)
@@ -79,9 +153,39 @@ export default function Taskbar({
       }
     })
   }, [])
-  const shortTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const shortTime = time.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: false })
   const shortDate = time.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: 'numeric' })
   const [ctxMenu, setCtxMenu] = useState({ open: false, x: 0, y: 0, win: null })
+  const [hoveredRightKey, setHoveredRightKey] = useState(null)
+  const getAppHoverStyle = (key) =>
+    hoveredAppKey === key
+      ? {
+          background: 'rgba(255, 255, 255, 0.08)',
+          boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        }
+      : undefined
+  const renderHoverOverlay = (label) => (
+    <>
+      <div
+        className='taskbar-hover-overlay'
+        style={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          bottom: 'calc(100% + 18px)',
+          background: 'rgba(20, 20, 24, 0.96)',
+          color: '#fff',
+          padding: '5px 10px',
+          borderRadius: '6px',
+          fontSize: '15px',
+          whiteSpace: 'nowrap',
+          zIndex: 20000,
+        }}
+      >
+        {label}
+      </div>
+    </>
+  )
   const handleContext = (e, winOrPinned) => {
     e.preventDefault()
     setCtxMenu({ open: true, x: e.clientX, y: e.clientY, win: winOrPinned })
@@ -95,26 +199,24 @@ export default function Taskbar({
   }, [ctxMenu.open])
   const pinnedIds = new Set(pinnedApps.map((p) => p.id))
   const unpinnedWindows = windows.filter((w) => !pinnedIds.has(w.appId))
+  
   return (
     <>
       <div className="taskbar" onMouseDown={(e) => e.stopPropagation()}>
-        {}
-        {}
-        {}
         <div className="taskbar-center">
           <button className="start-button" onClick={onStartClick} title="Start">
-            <img src="https://img.icons8.com/fluency/48/windows-11.png" alt="Windows" width={24} height={24} />
+            <img src="/icons/windows-11.png" alt="Windows"/>
           </button>
           <div className="taskbar-icons" style={{ display: 'flex' }}>
-            {}
             {pinnedApps.map((app) => {
               const openWin = windows.find((w) => w.appId === app.id)
-              const hasWindow = !!openWin  // Show indicator if window exists, even if minimized
+              const hasWindow = !!openWin  
               const isActive = openWin && openWin.id === focusedId && !openWin.minimized
               return (
                 <button
                   key={`pin-${app.id}`}
-                  className={`taskbar-btn taskbar-app ${isActive ? 'active' : ''} ${hasWindow ? 'has-window' : ''}`}
+                  className={`taskbar-btn taskbar-app ${isActive ? 'active' : ''} ${hasWindow ? 'has-window' : ''} ${hoveredAppKey === `pin-${app.id}` ? 'is-hovered' : ''}`}
+                  style={getAppHoverStyle(`pin-${app.id}`)}
                   onClick={() => {
                     if (openWin) {
                       onWindowClick(openWin.id)
@@ -122,10 +224,13 @@ export default function Taskbar({
                       onLaunchApp(app)
                     }
                   }}
+                  onMouseEnter={() => setHoveredAppKey(`pin-${app.id}`)}
+                  onMouseLeave={() => setHoveredAppKey((prev) => (prev === `pin-${app.id}` ? null : prev))}
                   onContextMenu={(e) => handleContext(e, app)}
-                  title={app.name}
+                  aria-label={app.name}
                   draggable
                   onDragStart={() => setDraggedApp(app)}
+                  onDragEnd={() => setHoveredAppKey(null)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault()
@@ -145,20 +250,23 @@ export default function Taskbar({
                   <div className="taskbar-app-icon">
                     {app.icon ? <img src={app.icon} alt={app.name} /> : app.name[0]}
                   </div>
+                  {hoveredAppKey === `pin-${app.id}` && renderHoverOverlay(app.name)}
                   {openWin && <div className="taskbar-indicator" />}
                 </button>
               )
             })}
-            {}
             {unpinnedWindows.map((win) => {
               const isActive = win.id === focusedId
               return (
                 <button
                   key={`win-${win.id}`}
-                  className={`taskbar-btn taskbar-app has-window ${isActive ? 'active' : ''} ${win.minimized ? 'minimized' : ''}`}
+                  className={`taskbar-btn taskbar-app has-window ${isActive ? 'active' : ''} ${win.minimized ? 'minimized' : ''} ${hoveredAppKey === `win-${win.id}` ? 'is-hovered' : ''}`}
+                  style={getAppHoverStyle(`win-${win.id}`)}
                   onClick={() => onWindowClick(win.id)}
+                  onMouseEnter={() => setHoveredAppKey(`win-${win.id}`)}
+                  onMouseLeave={() => setHoveredAppKey((prev) => (prev === `win-${win.id}` ? null : prev))}
                   onContextMenu={(e) => handleContext(e, win)}
-                  title={win.title}
+                  aria-label={win.title}
                 >
                   <div className="taskbar-app-icon">
                     {win.icon ? (
@@ -167,38 +275,62 @@ export default function Taskbar({
                       <span style={{ fontSize: '16px' }}>⌘</span>
                     )}
                   </div>
+                  {hoveredAppKey === `win-${win.id}` && renderHoverOverlay(win.title)}
                   <div className="taskbar-indicator" />
                 </button>
               )
             })}
           </div>
         </div>
-        {}
         <div className="taskbar-right">
-          <div className="system-tray-group" onClick={onQuickSettingsClick} title={`${wifiName} • Volume: 100% • Battery: ${battery ? battery.level + '%' : 'Unknown'}`}>
-            <MdWifi size={16} />
-            <MdVolumeUp size={15} />
-            {battery && (
-              <div className="tb-battery-mini">
-                <div className="battery-outline-mini">
-                  <div
-                    className={`battery-fill-mini ${battery.level <= 20 ? 'low' : ''}`}
-                    style={{ width: `${battery.level}%` }}
-                  />
-                </div>
-              </div>
-            )}
+          <div
+            className="system-tray-container"
+            onClick={onQuickSettingsClick}
+            onMouseEnter={() => setHoveredRightKey('tray')}
+            onMouseLeave={() => setHoveredRightKey((prev) => (prev === 'tray' ? null : prev))}
+            style={{
+              position: 'relative',
+              ...(hoveredRightKey === 'tray'
+                ? {
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  }
+                : {}),
+            }}
+          >
+            <div className="system-tray-item"><WifiTrayIcon size={35} /></div>
+            <div className="system-tray-item"><VolumeTrayIcon size={35} /></div>
+            <div className="system-tray-item"><BatteryTrayIcon size={35} /></div>
           </div>
-          {}
-          <div className="taskbar-clock" onClick={onCalendarClick} title="Calendar">
+          <div
+            className="taskbar-clock"
+            onClick={onCalendarClick}
+            aria-label="Calendar"
+            onMouseEnter={() => setHoveredRightKey('clock')}
+            onMouseLeave={() => setHoveredRightKey((prev) => (prev === 'clock' ? null : prev))}
+            style={{
+              position: 'relative',
+              ...(hoveredRightKey === 'clock'
+                ? { background: 'rgba(255, 255, 255, 0.08)', boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.05)' }
+                : {}),
+            }}
+          >
             <span className="tb-time">{shortTime}</span>
             <span className="tb-date">{shortDate}</span>
+            {hoveredRightKey === 'clock' && renderHoverOverlay('Calendar')}
           </div>
-          {}
-          <div className="tb-show-desktop" onClick={onShowDesktop} title="Show desktop" />
+          <div
+            className="tb-show-desktop"
+            onClick={onShowDesktop}
+            aria-label="Show desktop"
+            onMouseEnter={() => setHoveredRightKey('desktop')}
+            onMouseLeave={() => setHoveredRightKey((prev) => (prev === 'desktop' ? null : prev))}
+            style={{ position: 'relative' }}
+          >
+            {hoveredRightKey === 'desktop' && renderHoverOverlay('Show desktop')}
+          </div>
         </div>
       </div>
-      {}
       {ctxMenu.open && (
         <div
           className="context-menu"
@@ -216,7 +348,6 @@ export default function Taskbar({
               ? 'Unpin from taskbar'
               : 'Pin to taskbar'}
           </div>
-          {/* <div className="ctx-divider" /> */}
           {ctxMenu.win && windows.some(w => w.appId === ctxMenu.win.id || w.id === ctxMenu.win.id) && (
             <div className="ctx-item" onClick={() => closeCtx()}>Close window</div>
           )}

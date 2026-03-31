@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
-import { MdWbSunny, MdCloudQueue, MdLocationOn, MdTrendingUp, MdTrendingDown, MdOutlineInsights } from 'react-icons/md'
+import { MdLocationOn } from 'react-icons/md'
 import { Icon } from '@iconify/react'
 function formatClock(d) {
   const h = d.getHours().toString().padStart(2, '0')

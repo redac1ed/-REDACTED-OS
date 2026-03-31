@@ -13,7 +13,6 @@ const TOOLS = [
   { id: 'rect',   Icon: MdCropSquare,           label: 'Rect'   },
   { id: 'circle', Icon: MdRadioButtonUnchecked, label: 'Circle' },
 ]
-
 const PALETTE = [
   '#000000','#3c3c3c','#7f7f7f','#c0c0c0','#ffffff',
   '#d93025','#ff6d00','#f9ab00','#7cb342','#1a73e8',
@@ -33,7 +32,6 @@ export default function Paint() {
   const [startPt,   setStartPt]   = useState(null)
   const [pos,       setPos]       = useState({ x: 0, y: 0 })
   const [cSize,     setCSize]     = useState({ w: 0, h: 0 })
-
   const getPoint = (e) => {
     const c = canvasRef.current, r = c.getBoundingClientRect()
     return {
@@ -41,9 +39,7 @@ export default function Paint() {
       y: Math.round((e.clientY - r.top)  * (c.height / r.height)),
     }
   }
-
   const fill = (ctx, w, h) => { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h) }
-
   const applyBrush = (ctx) => {
     ctx.globalAlpha = brushType === 'marker' ? 0.35 : 1
     ctx.lineWidth   = brushType === 'marker' ? brushSize * 1.8 : brushSize
@@ -51,7 +47,6 @@ export default function Paint() {
     ctx.lineJoin    = brushType === 'square' ? 'miter' : 'round'
     ctx.strokeStyle = tool === 'eraser' ? '#fff' : color
   }
-
   const drawShape = (ctx, from, to) => {
     const w = to.x - from.x, h = to.y - from.y
     ctx.strokeStyle = color; ctx.lineWidth = brushSize
@@ -62,7 +57,6 @@ export default function Paint() {
     else                      { ctx.arc(from.x, from.y, Math.hypot(w, h), 0, Math.PI * 2) }
     ctx.stroke()
   }
-
   useEffect(() => {
     const canvas = canvasRef.current, stage = stageRef.current
     if (!canvas || !stage) return
@@ -82,7 +76,6 @@ export default function Paint() {
     ro.observe(stage)
     return () => ro.disconnect()
   }, [])
-
   const onDown = (e) => {
     const c = canvasRef.current, ctx = c.getContext('2d'), pt = getPoint(e)
     e.currentTarget.setPointerCapture?.(e.pointerId)
@@ -94,7 +87,6 @@ export default function Paint() {
       setStartPt(pt)
     }
   }
-
   const onMove = (e) => {
     const pt = getPoint(e)
     setPos(pt)
@@ -107,22 +99,19 @@ export default function Paint() {
       drawShape(ctx, startPt, pt)
     }
   }
-
   const onUp = () => { setIsDrawing(false); setStartPt(null); snapshotRef.current = null }
-
   const clearCanvas = () => {
     const c = canvasRef.current; fill(c.getContext('2d'), c.width, c.height)
   }
-
   const saveImage = () => {
     const a = Object.assign(document.createElement('a'), {
       download: 'drawing.png', href: canvasRef.current.toDataURL(),
     })
     a.click()
   }
+
   return (
     <div className="paint-app">
-      {/* menubar */}
       <div className="paint-menubar">
         <div className="paint-menu-left">
           {['File','Edit','View'].map(t => (
@@ -134,8 +123,6 @@ export default function Paint() {
           <button className="icon-ghost" title="Redo"><MdRedo size={17}/></button>
         </div>
       </div>
-
-      {/* ribbon */}
       <div className="paint-toolbar">
         <div className="paint-group size-group">
           <label className="slider-row">
@@ -152,7 +139,6 @@ export default function Paint() {
           </select>
           <div className="group-title">Brushes</div>
         </div>
-
         <div className="paint-group color-group">
           <div className="active-color-block" style={{ background: color }} />
           <div className="palette-grid">
@@ -167,16 +153,12 @@ export default function Paint() {
           </label>
           <div className="group-title">Colours</div>
         </div>
-
         <div className="paint-group action-group">
-          
           <button className="action-btn" onClick={clearCanvas}><MdDelete size={15}/> Clear</button>
           <button className="action-btn accent" onClick={saveImage}><MdSave size={15}/> Save</button>
           <div className="group-title">Actions</div>
         </div>
       </div>
-
-      {/* body: sidebar + canvas */}
       <div className="paint-body">
         <div className="paint-sidebar">
           {TOOLS.map(({ id, Icon, label }) => (
@@ -195,8 +177,6 @@ export default function Paint() {
             className="paint-canvas" />
         </div>
       </div>
-
-      {/* status bar */}
       <div className="paint-statusbar">
         <div className="zoom-control" style={{alignItems: 'right'}}>
             <button className="icon-ghost sm" onClick={() => setZoom(z => Math.max(25,z-25))} title="Zoom out"><MdZoomOut size={15}/></button>

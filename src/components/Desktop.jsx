@@ -15,22 +15,19 @@ import LibreOffice from './apps/LibreOffice'
 import Minecraft from './apps/Minecraft'
 
 const DESKTOP_STATE_KEY = 'win11.desktop.state.v1'
-
 const APP_CATALOG = [
-  { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
-  { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
-  { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
-  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
-  { id: 'libreoffice', name: 'LibreOffice', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg', component: LibreOffice },
-  { id: 'minecraft', name: 'Minecraft', icon: 'https://img.icons8.com/?id=aFKNWWquUYRN&format=png', component: Minecraft },
-  { id: 'settings', name: 'Settings', icon: 'https://img.icons8.com/fluency/48/settings.png', component: Settings },
+  { id: 'browser', name: 'Chrome', icon: '/icons/chrome.png', component: Browser },
+  { id: 'terminal', name: 'Terminal', icon: '/icons/terminal.png', component: Terminal },
+  { id: 'vscode', name: 'VS Code', icon: '/icons/vscode.png', component: VSCode },
+  { id: 'doom', name: 'Doom', icon: '/icons/doom.png', component: Doom },
+  { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
+  { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
+  { id: 'settings', name: 'Settings', icon: '/icons/settings.png', component: Settings },
 ]
-
 const APP_BY_ID = APP_CATALOG.reduce((acc, app) => {
   acc[app.id] = app
   return acc
 }, {})
-
 const INITIAL_PINNED_APPS = APP_CATALOG.slice(0, 6)
 
 export default function Desktop({ onLock }) {
@@ -45,7 +42,6 @@ export default function Desktop({ onLock }) {
   const [pinnedApps, setPinnedApps] = useState(INITIAL_PINNED_APPS)
   const [desktopContextMenu, setDesktopContextMenu] = useState({ open: false, x: 0, y: 0 })
   const hydratedRef = useRef(false)
-
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DESKTOP_STATE_KEY)
@@ -53,16 +49,13 @@ export default function Desktop({ onLock }) {
         hydratedRef.current = true
         return
       }
-
       const saved = JSON.parse(raw)
-
       if (Array.isArray(saved?.pinnedAppIds)) {
         const restoredPinned = saved.pinnedAppIds
           .map((id) => APP_BY_ID[id])
           .filter(Boolean)
         if (restoredPinned.length) setPinnedApps(restoredPinned)
       }
-
       if (Array.isArray(saved?.windows)) {
         const restoredWindows = saved.windows
           .map((w) => {
@@ -78,19 +71,25 @@ export default function Desktop({ onLock }) {
             }
           })
           .filter(Boolean)
-
-        setWindows(restoredWindows)
+        const seenAppIds = new Set()
+        const dedupedWindows = [...restoredWindows]
+          .reverse()
+          .filter((w) => {
+            if (!w.appId) return true
+            if (seenAppIds.has(w.appId)) return false
+            seenAppIds.add(w.appId)
+            return true
+          })
+          .reverse()
+        setWindows(dedupedWindows)
       }
-
       if (saved?.iconPositions && typeof saved.iconPositions === 'object') {
         setIconPositions(saved.iconPositions)
       }
-
       if (typeof saved?.focusedId === 'number') setFocusedId(saved.focusedId)
       if (typeof saved?.nextId === 'number') setNextId(saved.nextId)
       if (typeof saved?.nextZIndex === 'number') setNextZIndex(saved.nextZIndex)
     } catch {
-      // ignore invalid persisted state
     } finally {
       hydratedRef.current = true
     }
@@ -98,7 +97,6 @@ export default function Desktop({ onLock }) {
 
   useEffect(() => {
     if (!hydratedRef.current) return
-
     const payload = {
       pinnedAppIds: pinnedApps.map((p) => p.id),
       windows: windows.map(({ component, ...rest }) => rest),
@@ -107,10 +105,8 @@ export default function Desktop({ onLock }) {
       nextId,
       nextZIndex,
     }
-
     localStorage.setItem(DESKTOP_STATE_KEY, JSON.stringify(payload))
   }, [windows, pinnedApps, iconPositions, focusedId, nextId, nextZIndex])
-
   const focusWindow = useCallback((id) => {
     setFocusedId(id)
     setNextZIndex((z) => {
@@ -124,44 +120,47 @@ export default function Desktop({ onLock }) {
   const openApp = (app) => {
     const catalogApp = app?.id ? APP_BY_ID[app.id] : APP_CATALOG.find((a) => a.name === app?.name)
     const resolvedApp = catalogApp ? { ...catalogApp, ...app } : app
-
-    const existing = windows.find((w) => w.appId === resolvedApp.id)
-    if (existing) {
-      setWindows((prev) =>
-        prev.map((w) => (
+    if (!resolvedApp?.id) return
+    setStartMenuOpen(false)
+    setWindows((prev) => {
+      const existing = prev.find((w) => w.appId === resolvedApp.id)
+      const maxZ = Math.max(nextZIndex, ...prev.map((w) => Number(w.zIndex) || 0))
+      if (existing) {
+        const newZ = maxZ + 1
+        setNextZIndex(newZ)
+        setFocusedId(existing.id)
+        return prev.map((w) => (
           w.id === existing.id
-            ? { ...w, minimized: false, appProps: resolvedApp.appProps || w.appProps || {} }
+            ? { ...w, minimized: false, zIndex: newZ, appProps: resolvedApp.appProps || w.appProps || {} }
             : w
         ))
-      )
-      focusWindow(existing.id)
-      setStartMenuOpen(false)
-      return
-    }
-    const offsetX = 80 + ((nextId * 30) % 200)
-    const offsetY = 60 + ((nextId * 30) % 150)
-    const newZ = nextZIndex + 1
-    setNextZIndex(newZ)
-    const newWindow = {
-      id: nextId,
-      appId: resolvedApp.id || null,
-      title: resolvedApp.name,
-      icon: resolvedApp.icon || null,
-      openAt: Date.now(),
-      component: resolvedApp.component,
-      appProps: resolvedApp.appProps || {},
-      x: offsetX,
-      y: offsetY,
-      width: resolvedApp.defaultWidth || 720,
-      height: resolvedApp.defaultHeight || 500,
-      minimized: false,
-      maximized: false,
-      zIndex: newZ,
-    }
-    setWindows((prev) => [...prev, newWindow])
-    setFocusedId(nextId)
-    setNextId((id) => id + 1)
-    setStartMenuOpen(false)
+      }
+      const maxId = prev.reduce((acc, w) => Math.max(acc, Number(w.id) || 0), 0)
+      const newId = Math.max(maxId + 1, nextId)
+      const newZ = maxZ + 1
+      const offsetX = 80 + ((newId * 30) % 200)
+      const offsetY = 60 + ((newId * 30) % 150)
+      const newWindow = {
+        id: newId,
+        appId: resolvedApp.id || null,
+        title: resolvedApp.name,
+        icon: resolvedApp.icon || null,
+        openAt: Date.now(),
+        component: resolvedApp.component,
+        appProps: resolvedApp.appProps || {},
+        x: offsetX,
+        y: offsetY,
+        width: resolvedApp.defaultWidth || 720,
+        height: resolvedApp.defaultHeight || 500,
+        minimized: false,
+        maximized: false,
+        zIndex: newZ,
+      }
+      setFocusedId(newId)
+      setNextId(newId + 1)
+      setNextZIndex(newZ)
+      return [...prev, newWindow]
+    })
   }
   const togglePin = (app) => {
     setPinnedApps((prev) => {
@@ -191,23 +190,19 @@ export default function Desktop({ onLock }) {
   const updateWindowSize = useCallback((id, width, height) => {
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, width, height } : w)))
   }, [])
-
   const showDesktop = useCallback(() => {
     setWindows((prev) => prev.map((w) => ({ ...w, minimized: true })))
     setFocusedId(null)
   }, [])
-
   const handleReorderPinned = useCallback((newOrder) => {
     setPinnedApps(newOrder)
   }, [])
-
   const handleDesktopClick = () => {
     setStartMenuOpen(false)
     setCalendarOpen(false)
     setQuickSettingsOpen(false)
     setDesktopContextMenu({ open: false, x: 0, y: 0 })
   }
-
   const handleDesktopContextMenu = (e) => {
     if (e.target.closest('.desktop-icon, .window-container, .taskbar, .start-menu, .calendar-panel, .quick-settings-panel')) {
       return
@@ -298,7 +293,7 @@ export default function Desktop({ onLock }) {
         isOpen={quickSettingsOpen}
         onClose={() => setQuickSettingsOpen(false)}
         onOpenSettings={() => {
-          openApp({ id: 'settings', name: 'Settings', icon: 'https://img.icons8.com/fluency/48/settings.png', component: Settings })
+          openApp({ id: 'settings', name: 'Settings', icon: '/icons/settings.png', component: Settings })
           setQuickSettingsOpen(false)
         }}
       />

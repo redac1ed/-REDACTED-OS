@@ -15,19 +15,19 @@ import LibreOffice from './apps/LibreOffice'
 import Minecraft from './apps/Minecraft'
 
 const APPS = [
-  { id: 'profile', name: 'Profile', icon: 'https://img.icons8.com/?id=kDoeg22e5jUY&format=png', component: Profile },
-  { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
-  { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
-  { id: 'calculator', name: 'Calculator', icon: 'https://img.icons8.com/fluency/48/calculator.png', component: Calculator },
-  { id: 'notepad', name: 'Notepad', icon: 'https://img.icons8.com/fluency/48/notepad.png', component: Notepad },
-  { id: 'explorer', name: 'File Explorer', icon: 'https://img.icons8.com/fluency/48/folder-invoices.png', component: FileExplorer },
-  { id: 'settings', name: 'Settings', icon: 'https://img.icons8.com/fluency/48/settings.png', component: Settings },
-  { id: 'todo', name: 'Todo List', icon: 'https://img.icons8.com/fluency/48/checkmark.png', component: Todo },
-  { id: 'paint', name: 'Paint', icon: 'https://img.icons8.com/fluency/48/microsoft-paint.png', component: Paint },
-  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
-  { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
-  { id: 'libreoffice', name: 'LibreOffice', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg', component: LibreOffice },
-  { id: 'minecraft', name: 'Minecraft', icon: 'https://img.icons8.com/?id=aFKNWWquUYRN&format=png', component: Minecraft },
+  { id: 'profile', name: 'Profile', icon: '/icons/profile.png', component: Profile },
+  { id: 'browser', name: 'Chrome', icon: '/icons/chrome.png', component: Browser },
+  { id: 'terminal', name: 'Terminal', icon: '/icons/terminal.png', component: Terminal },
+  { id: 'calculator', name: 'Calculator', icon: '/icons/calculator.png', component: Calculator },
+  { id: 'notepad', name: 'Notepad', icon: '/icons/notepad.png', component: Notepad },
+  { id: 'explorer', name: 'File Explorer', icon: '/icons/folder-invoices.png', component: FileExplorer },
+  { id: 'settings', name: 'Settings', icon: '/icons/settings.png', component: Settings },
+  { id: 'todo', name: 'Todo List', icon: '/icons/checkmark.png', component: Todo },
+  { id: 'paint', name: 'Paint', icon: '/icons/microsoft-paint.png', component: Paint },
+  { id: 'doom', name: 'Doom', icon: '/icons/doom.png', component: Doom },
+  { id: 'vscode', name: 'VS Code', icon: '/icons/vscode.png', component: VSCode },
+  { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
+  { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
 ]
 
 export default function StartMenu({ isOpen, onToggle, onAppClick, onLock }) {
@@ -60,7 +60,7 @@ export default function StartMenu({ isOpen, onToggle, onAppClick, onLock }) {
             <input
               ref={searchRef}
               type="text"
-              placeholder="Search for apps, settings, and documents"
+              placeholder="Search for apps"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="start-search"

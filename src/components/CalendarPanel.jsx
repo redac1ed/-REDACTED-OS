@@ -13,43 +13,31 @@ export default function CalendarPanel({ isOpen, onClose }) {
       subtitle: 'You might want to check out your profile.'
     }
   ]);
-
   useEffect(() => {
     if (isOpen) {
       setDate(new Date());
     }
   }, [isOpen]);
-
   if (!isOpen) return null;
-
   const currentYear = date.getFullYear();
   const currentMonth = date.getMonth();
   const monthName = date.toLocaleString('default', { month: 'long' });
-
   const handlePrevMonth = () => {
     setDate(new Date(currentYear, currentMonth - 1, 1));
   };
-
   const handleNextMonth = () => {
     setDate(new Date(currentYear, currentMonth + 1, 1));
   };
-
-  // Days in month logic
   const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
   const prevMonthDays = daysInMonth(currentYear, currentMonth - 1);
   const thisMonthDays = daysInMonth(currentYear, currentMonth);
   const startDay = firstDayOfMonth(currentYear, currentMonth);
-
   const calendarDays = [];
-
-  // Previous month padding
   for (let i = startDay - 1; i >= 0; i--) {
     calendarDays.push({ day: prevMonthDays - i, current: false });
   }
-
-  // Current month days
   const today = new Date();
   for (let i = 1; i <= thisMonthDays; i++) {
     const isToday = 
@@ -59,26 +47,20 @@ export default function CalendarPanel({ isOpen, onClose }) {
     
     calendarDays.push({ day: i, current: true, today: isToday });
   }
-
   const totalSlots = 42; 
   const nextPadding = totalSlots - calendarDays.length;
   for (let i = 1; i <= nextPadding; i++) {
     calendarDays.push({ day: i, current: false });
   }
-
   return (
     <div className="calendar-panel-overlay" onClick={onClose}>
       <div className="calendar-panel" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-        
-        {/* Notifications Section */}
         <div className="calendar-header-section">
           <div className="calendar-title">Notifications</div>
           <div className="calendar-notif-btns">
-            {/* <button type="button" className="notif-btn" title="Focus Assist"><MdNotificationsPaused size={16} /></button> */}
             <button type="button" className="notif-btn clear-all" onClick={() => setNotifications([])}>Clear all</button>
           </div>
         </div>
-
         <div className="calendar-notifications">
           {notifications.length === 0 ? (
             <div className="notif-empty">No new notifications</div>
@@ -99,8 +81,6 @@ export default function CalendarPanel({ isOpen, onClose }) {
             ))
           )}
         </div>
-
-        {/* Calendar Section */}
         <div className="calendar-section">
           <div className="calendar-month-header">
             <div className="month-display">
@@ -109,7 +89,6 @@ export default function CalendarPanel({ isOpen, onClose }) {
             <div className="month-controls" onClick={() => setDate(new Date())} title="Go to today">
             </div>
           </div>
-
           <div className="calendar-grid-container">
             <div className="calendar-month-label">
               <span>{monthName} {currentYear}</span>
@@ -118,11 +97,9 @@ export default function CalendarPanel({ isOpen, onClose }) {
                  <button type="button" className="cal-arrow-btn" onClick={handleNextMonth}><MdKeyboardArrowDown size={18} /></button>
               </div>
             </div>
-
             <div className="calendar-weekdays">
               {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => <div key={d}>{d}</div>)}
             </div>
-
             <div className="calendar-days">
               {calendarDays.map((d, i) => (
                 <div 

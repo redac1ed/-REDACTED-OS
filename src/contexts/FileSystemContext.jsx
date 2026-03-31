@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 
 const FileSystemContext = createContext();
-
 const INITIAL_FS = {
   name: 'root',
   type: 'folder',
@@ -9,12 +8,12 @@ const INITIAL_FS = {
     Desktop: {
       type: 'folder',
       children: {
-        "Chrome" : { type: 'apps', content: '', icon: 'https://img.icons8.com/fluency/48/chrome.png' },
-        "Terminal" : { type: 'apps', content: '', icon: 'https://img.icons8.com/fluency/48/console.png' },
-        "VS Code" : { type: 'apps', content: '', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png' },
-        "Doom" : { type: 'apps', content: '', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png' },
-        "LibreOffice" : { type: 'apps', content: '', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg' },
-        "Minecraft" : { type: 'apps', content: '', icon: 'https://img.icons8.com/?id=aFKNWWquUYRN&format=png' },
+        "Chrome" : { type: 'apps', content: '', icon: '/icons/chrome.png' },
+        "Terminal" : { type: 'apps', content: '', icon: '/icons/terminal.png' },
+        "VS Code" : { type: 'apps', content: '', icon: '/icons/vscode.png' },
+        "Doom" : { type: 'apps', content: '', icon: '/icons/doom.png' },
+        "LibreOffice" : { type: 'apps', content: '', icon: '/icons/libreoffice.jpg' },
+        "Minecraft" : { type: 'apps', content: '', icon: '/icons/minecraft.png' },
       }
     },
     Documents: {
@@ -66,8 +65,7 @@ PS: These apps are pretty heavy, so they might take some time to load.` }
 };
 
 export const FileSystemProvider = ({ children }) => {
-  const [fs, setFs] = useState(INITIAL_FS);
-
+  const fs = useState(INITIAL_FS);
   const getNode = useCallback((pathArray) => {
     let current = fs;
     for (const key of pathArray) {
@@ -79,7 +77,6 @@ export const FileSystemProvider = ({ children }) => {
     }
     return current;
   }, [fs]);
-
   const readdir = useCallback((pathArray) => {
     const node = getNode(pathArray);
     if (node && node.type === 'folder' && node.children) {

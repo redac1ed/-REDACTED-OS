@@ -49,17 +49,15 @@ function NavItem({ icon, label, active, hasArrow, indent = 0, onClick }) {
 
 export default function FileExplorer() {
   const { readdir } = useFileSystem();
-  const [currentPath, setCurrentPath] = useState('Home'); // 'Home' or array of strings
+  const [currentPath, setCurrentPath] = useState('Home');
   const [history, setHistory] = useState(['Home']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
    const [selectedFile, setSelectedFile] = useState(null);
-
    const resolveAssetPath = (path = '') => {
       if (!path) return '';
       return path.startsWith('/') ? path : `/${path}`;
    };
-
    const formatPreviewText = (text = '') => {
       const rawText = String(text).replace(/\r\n/g, '\n');
       const lines = rawText.split('\n');
@@ -109,7 +107,6 @@ export default function FileExplorer() {
       </>
     );
   }
-
   const files = Array.isArray(currentPath) ? readdir(currentPath) : [];
   const filteredFiles = searchQuery 
     ? files.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase())) 
@@ -126,7 +123,6 @@ export default function FileExplorer() {
       fontSize: '14px',
       userSelect: 'none'
     }}>
-      {/* Top Navigation Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -139,8 +135,6 @@ export default function FileExplorer() {
             <button className="icon-btn" onClick={goBack} disabled={historyIndex === 0}><MdArrowBack style={{ opacity: historyIndex === 0 ? 0.4 : 1 }}/></button>
             <button className="icon-btn" onClick={goForward} disabled={historyIndex === history.length - 1}><MdArrowForward style={{ opacity: historyIndex === history.length - 1 ? 0.4 : 1 }} /></button>
          </div>
-         
-         {/* Address Bar */}
          <div style={{
             flex: 1,
             display: 'flex',
@@ -153,8 +147,6 @@ export default function FileExplorer() {
          }}>
             {getBreadcrumbs()}
          </div>
-
-         {/* Search Bar */}
          <div style={{
             width: '240px',
             display: 'flex',
@@ -184,8 +176,6 @@ export default function FileExplorer() {
          </div>
       </div>
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-         
-         {/* Sidebar */}
          <div className="file-explorer-sidebar-scroll" style={{
             width: '240px',
             padding: '12px 6px',
@@ -216,7 +206,6 @@ export default function FileExplorer() {
                
                {currentPath === 'Home' ? (
                    <>
-                   {/* Quick Access Section */}
                    <div style={{ padding: '20px 0' }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                          <div style={{ marginRight: '8px' }}>▼</div>
@@ -266,8 +255,6 @@ export default function FileExplorer() {
                          ))}
                       </div>
                    </div>
-    
-                   {/* Recent Files Section */}
                    <div style={{ padding: '10px 0' }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px', gap: '24px' }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -285,7 +272,6 @@ export default function FileExplorer() {
                             <div>Activity</div>
                             <div></div>
                          </div>
-                         
                          {RECENT_FILES.map((file, i) => (
                             <div key={i} style={{ 
                                display: 'grid', 
@@ -386,7 +372,6 @@ export default function FileExplorer() {
                               ))}
                            </div>
                         </div>
-                        {/* preview funcs */}
                         {selectedFile && ['txt', 'image', 'video', 'music'].includes(selectedFile.type) && (
                            <div style={{
                               width: '40%',
@@ -477,79 +462,6 @@ export default function FileExplorer() {
          </div>
       </div>
 
-      <style>{`
-         .icon-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            padding: 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-         }
-         .icon-btn:hover:not(:disabled) {
-            background: rgba(255,255,255,0.1);
-         }
-         .toolbar-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-         }
-         .toolbar-btn:hover {
-            background: rgba(255,255,255,0.1);
-         }
-         .toolbar-icon {
-            padding: 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-         }
-         .toolbar-icon:hover {
-            background: rgba(255,255,255,0.1);
-         }
-         .nav-hover:hover {
-            background: rgba(255,255,255,0.06) !important;
-         }
-         .file-grid-item:hover {
-            background: rgba(255,255,255,0.04) !important;
-         }
-         .file-list-row:hover {
-            background: rgba(255,255,255,0.04);
-         }
-         .file-explorer-sidebar-scroll::-webkit-scrollbar,
-         .file-explorer-main-scroll::-webkit-scrollbar,
-         .file-explorer-text-preview-scroll::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
-         }
-         .file-explorer-sidebar-scroll::-webkit-scrollbar-track,
-         .file-explorer-main-scroll::-webkit-scrollbar-track,
-         .file-explorer-text-preview-scroll::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.03);
-         }
-         .file-explorer-sidebar-scroll::-webkit-scrollbar-thumb,
-         .file-explorer-main-scroll::-webkit-scrollbar-thumb,
-         .file-explorer-text-preview-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(150,150,150,0.8), rgba(95,95,95,0.85));
-            border-radius: 999px;
-            border: 3px solid rgba(0,0,0,0);
-            background-clip: padding-box;
-         }
-         .file-explorer-sidebar-scroll::-webkit-scrollbar-thumb:hover,
-         .file-explorer-main-scroll::-webkit-scrollbar-thumb:hover,
-         .file-explorer-text-preview-scroll::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, rgba(190,190,190,0.9), rgba(120,120,120,0.9));
-            border: 3px solid rgba(0,0,0,0);
-            background-clip: padding-box;
-         }
-      `}</style>
     </div>
   )
 }

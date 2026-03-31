@@ -29,17 +29,6 @@ export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPos
   const dragOffset = useRef({ x: 0, y: 0 })
   const dragStartRef = useRef(null)
   const didDragRef = useRef(false)
-
-  useEffect(() => {
-    setApps(
-      INITIAL_APPS.map((app, index) => ({
-        ...app,
-        x: savedPositions[app.id]?.x ?? 12 + Math.floor(index / 8) * 100,
-        y: savedPositions[app.id]?.y ?? 12 + (index % 8) * 105,
-      }))
-    )
-  }, [savedPositions])
-
   const handleMouseDown = (e, app) => {
     if (e.button !== 0) return 
     e.stopPropagation()
@@ -49,7 +38,15 @@ export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPos
     dragOffset.current = { x: e.clientX - app.x, y: e.clientY - app.y }
     didDragRef.current = false
   }
-
+  useEffect(() => {
+    setApps(
+      INITIAL_APPS.map((app, index) => ({
+        ...app,
+        x: savedPositions[app.id]?.x ?? 12 + Math.floor(index / 8) * 100,
+        y: savedPositions[app.id]?.y ?? 12 + (index % 8) * 105,
+      }))
+    )
+  }, [savedPositions])
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!dragging && dragStartRef.current) {
@@ -83,9 +80,7 @@ export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPos
         if (app.id === dragging) {
           let gridX = Math.round((app.x - 12) / 100) * 100 + 12
           let gridY = Math.round((app.y - 12) / 105) * 105 + 12
-          
           const isOccupied = (x, y) => prevApps.some(a => a.id !== dragging && Math.abs(a.x - x) < 10 && Math.abs(a.y - y) < 10)
-          
           let safety = 0
           while (isOccupied(gridX, gridY) && safety < 100) {
              gridY += 105
@@ -95,18 +90,15 @@ export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPos
              }
              safety++
           }
-
           return { ...app, x: gridX, y: gridY }
         }
         return app
         })
-
         const positions = updatedApps.reduce((acc, app) => {
           acc[app.id] = { x: app.x, y: app.y }
           return acc
         }, {})
         onPositionsChange(positions)
-
         return updatedApps
       })
       setDragging(null)
@@ -120,7 +112,6 @@ export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPos
       window.removeEventListener('mouseup', handleMouseUp)
     }
   }, [dragging, pointerDown, onPositionsChange])
-
   const handleClick = (app, e) => {
     e.stopPropagation()
     if (didDragRef.current) {

@@ -31,18 +31,13 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
   const [activeTab, setActiveTab] = useState(initialTab)
   const [subPage, setSubPage] = useState(initialSubPage)
   const [customBgUrl, setCustomBgUrl] = useState('')
-
   useEffect(() => {
     setActiveTab(initialTab)
     setSubPage(initialSubPage)
   }, [initialTab, initialSubPage])
-
   const bgPreview = currentColors['--desktop-bg'] || "url('/primary-bg.jpg')"
-
   const [volume, setVolume] = useState(50)
   const [outputDevice, setOutputDevice] = useState('Speakers (Realtek(R) Audio)')
-  
-  // Notification states
   const [globalNotifications, setGlobalNotifications] = useState(true)
   const [dndMode, setDndMode] = useState(false)
   const [appNotifications, setAppNotifications] = useState({
@@ -51,23 +46,19 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
     explorer: false,
     system: true
   })
-
   const handleTabChange = (id) => {
     setActiveTab(id)
     setSubPage(null)
   }
-
   const navItems = [
     { id: 'system', label: 'System', icon: <MdMonitor size={18} /> },
     { id: 'personalization', label: 'Personalization', icon: <MdPalette size={18} /> },
     { id: 'notifications', label: 'Notifications', icon: <MdNotifications size={18} /> },
     { id: 'about', label: 'About', icon: <MdInfo size={18} /> },
   ]
-
   const handleColorChange = (key, value) => {
     updateCustomTheme({ [key]: value });
   };
-
   const parseRgbaToHex = (value, fallback = '#202020') => {
     if (!value) return fallback
     if (value.startsWith('#')) return value
@@ -76,7 +67,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
     const [r, g, b] = [match[1], match[2], match[3]].map((v) => Number(v).toString(16).padStart(2, '0'))
     return `#${r}${g}${b}`
   }
-
   const wallpaperOptions = useMemo(
     () => [
       '/primary-bg.jpg',
@@ -88,291 +78,10 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
     ],
     []
   )
-
   const quickAccents = ['#0078d4', '#4ca8ff', '#00c2a8', '#ff5ca8', '#c86cff', '#f59e0b']
 
   return (
     <div className="settings-shell">
-      <style>{`
-        .settings-shell {
-          display: flex;
-          height: 100%;
-          background: var(--theme-bg-color);
-          color: var(--theme-text-color);
-          backdrop-filter: blur(30px);
-          font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
-        }
-        .settings-sidebar-glass {
-          width: 280px;
-          background: rgba(var(--theme-window-color-rgb), 0.4);
-          border-right: 1px solid var(--theme-border-color);
-          display: flex;
-          flex-direction: column;
-          padding: 16px;
-          gap: 12px;
-        }
-        .settings-user-card {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 14px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid var(--theme-border-color);
-          border-radius: 14px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .settings-user-card img {
-          width: 48px !important;
-          height: 48px !important;
-          border-radius: 50% !important;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .settings-nav-item {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 12px 14px;
-          border-radius: 12px;
-          cursor: pointer;
-          margin-bottom: 4px;
-          border: 1px solid transparent;
-          transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-          font-size: 14px;
-          font-weight: 500;
-        }
-        .settings-nav-item:hover {
-          background: rgba(255,255,255,0.06);
-          border-color: rgba(255,255,255,0.05);
-        }
-        .settings-nav-item.active {
-          background: rgba(var(--theme-accent-rgb), 0.15);
-          border-color: rgba(var(--theme-accent-rgb), 0.3);
-          color: var(--theme-accent-color);
-        }
-        .settings-main {
-          flex: 1;
-          padding: 40px 48px;
-          overflow-y: auto;
-          background: rgba(var(--theme-window-color-rgb), 0.2);
-        }
-        .settings-page-title {
-          font-size: 36px;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          margin-bottom: 28px;
-          text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .settings-panel {
-          background: var(--theme-card-bg);
-          border: 1px solid var(--theme-border-color);
-          border-radius: 16px;
-          padding: 22px;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-          backdrop-filter: blur(10px);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .settings-panel:hover {
-          box-shadow: 0 12px 40px rgba(0,0,0,0.16);
-        }
-        .settings-section-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 14px;
-          color: var(--theme-text-color);
-        }
-        .settings-muted {
-          opacity: 0.75;
-          font-size: 13px;
-          line-height: 1.4;
-        }
-        .settings-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          margin-bottom: 16px;
-        }
-        .settings-input,
-        .settings-select {
-          width: 100%;
-          padding: 10px 14px;
-          border-radius: 12px;
-          border: 1px solid var(--theme-input-border);
-          background: var(--theme-input-bg);
-          color: var(--theme-text-color);
-          outline: none;
-          font-size: 14px;
-          transition: all 0.2s ease;
-        }
-        .settings-input:focus,
-        .settings-select:focus {
-          border-color: var(--theme-card-bg);
-          background: rgba(255,255,255,0.05);
-        }
-        .settings-select option {
-          background: rgb(var(--theme-window-color-rgb));
-          color: var(--theme-text-color);
-        }
-        .settings-btn {
-          border: 1px solid var(--theme-border-color);
-          border-radius: 12px;
-          padding: 10px 18px;
-          background: rgba(255,255,255,0.05);
-          color: var(--theme-text-color);
-          cursor: pointer;
-          transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-          white-space: nowrap;
-          font-weight: 500;
-          font-size: 14px;
-        }
-        .settings-btn:hover {
-          border-color: rgba(var(--theme-accent-rgb), 0.5);
-          background: rgba(var(--theme-accent-rgb), 0.15);
-        }
-        .settings-btn:active {
-          // transform: translateY(1px);
-        }
-        .settings-btn.primary {
-          background: var(--theme-accent-color);
-          color: #fff;
-          border-color: transparent;
-        }
-        .settings-btn.primary:hover {
-          background: rgba(var(--theme-accent-rgb), 0.9);
-        }
-        .theme-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 16px;
-        }
-        .theme-card {
-          border-radius: 16px;
-          border: 1px solid var(--theme-border-color);
-          background: rgba(255,255,255,0.02);
-          cursor: pointer;
-          overflow: hidden;
-          transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .theme-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-          border-color: rgba(255,255,255,0.15);
-        }
-        .theme-preview {
-          height: 100px;
-          position: relative;
-        }
-        .theme-preview::before {
-          content: '';
-          position: absolute;
-          left: 12px;
-          right: 12px;
-          bottom: 12px;
-          height: 12px;
-          border-radius: 999px;
-          background: rgba(0,0,0,0.4);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .theme-label {
-          padding: 12px 16px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 14px;
-          font-weight: 600;
-        }
-        .theme-selected {
-          box-shadow: 0 0 0 2px var(--theme-accent-color), 0 8px 24px rgba(var(--theme-accent-rgb), 0.25);
-          border-color: transparent;
-        }
-        .wallpaper-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 16px;
-        }
-        .wallpaper-thumb {
-          height: 110px;
-          border-radius: 14px;
-          border: 2px solid transparent;
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-          transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-          background-size: cover;
-          background-position: center;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .wallpaper-thumb:hover { 
-          transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-        }
-        .wallpaper-thumb.active {
-          border-color: var(--theme-accent-color);
-          box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.25), 0 8px 24px rgba(0,0,0,0.2);
-        }
-        .color-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 16px;
-        }
-        .color-field {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          border: 1px solid var(--theme-border-color);
-          border-radius: 14px;
-          padding: 14px 16px;
-          background: rgba(255,255,255,0.02);
-          transition: background 0.2s ease;
-        }
-        .color-field:hover {
-          background: rgba(255,255,255,0.04);
-        }
-        .accent-swatches {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .swatch {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.8);
-          cursor: pointer;
-          transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .swatch:hover { 
-          transform: scale(1.15);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        }
-        .settings-disabled-item {
-          position: relative;
-          cursor: not-allowed;
-        }
-        .settings-admin-tooltip {
-          position: absolute;
-          right: 12px;
-          top: -34px;
-          background: rgba(20, 20, 20, 0.95);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: #fff;
-          font-size: 11px;
-          padding: 6px 8px;
-          border-radius: 8px;
-          white-space: nowrap;
-          pointer-events: none;
-          opacity: 0;
-          visibility: hidden;
-          z-index: 5;
-        }
-        .settings-disabled-item:hover .settings-admin-tooltip {
-          opacity: 1;
-          visibility: visible;
-        }
-      `}</style>
-      {/* Sidebar */}
       <div className="settings-sidebar-glass">
         <div className="settings-user-card">
           <img style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} src={user.avatar} alt={user.name} />
@@ -394,8 +103,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
           ))}
         </div>
       </div>
-
-      {/* Content */}
       <div className="settings-main">
         {subPage ? (
           <div className="subpage-container">
@@ -407,8 +114,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
               <span>Back</span>
             </div>
             <h1 className="settings-page-title" style={{ fontSize: '24px' }}>{subPage.title}</h1>
-            
-            {/* Display Settings */}
             {subPage.id === 'display' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div className="settings-panel">
@@ -434,8 +139,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                 </div>
               </div>
             )}
-
-            {/* Sound Settings */}
             {subPage.id === 'sound' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div className="settings-panel">
@@ -464,8 +167,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                 </div>
               </div>
             )}
-
-            {/* Background Settings */}
             {subPage.id === 'background' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div className="settings-panel">
@@ -501,11 +202,8 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                 </div>
               </div>
             )}
-
-            {/* Themes & Colors Settings */}
             {subPage.id === 'themes' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {/* Presets */}
                 <div className="settings-panel">
                   <div className="settings-row">
                     <div>
@@ -538,12 +236,9 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                      ))}
                   </div>
                 </div>
-
-                {/* Custom Colors */}
                 <div className="settings-panel">
                   <div className="settings-section-title">Custom style options</div>
                   <div className="settings-muted" style={{ marginBottom: 12 }}>Changes apply desktop-wide and save automatically.</div>
-
                   <div style={{ marginBottom: 14 }}>
                     <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 8 }}>Quick accent</div>
                     <div className="accent-swatches">
@@ -720,8 +415,6 @@ export default function Settings({ initialTab = 'system', initialSubPage = null 
                 </div>
               </div>
             )}
-
-            {/* Notification Settings */}
             {subPage.id === 'notifications' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div className="settings-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
