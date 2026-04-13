@@ -2,10 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Search, Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, X, Maximize2 } from 'lucide-react';
 import '../components.css';
 
-const BASE_URL = "https://verome-api.deno.dev";
-const STREAM_INSTANCES = ['https://yt.omada.cafe', 'https://lekker.gay'];
-const SEARCH_URL = "https://api.ytify.workers.dev/search";
-
 const MusicPlayer = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -31,7 +27,6 @@ const MusicPlayer = () => {
   const sourceRef = useRef(null);
   const sourceElementRef = useRef(null);
   const animationFrameRef = useRef(null);
-  const supportsOpusRef = useRef(null);
   const playbackSnapshotRef = useRef({ time: 0, wasPlaying: false, volume: 1, url: '' });
   const shouldRestorePlaybackRef = useRef(false);
   const isCompactPlayer = viewportWidth < 980;
@@ -63,91 +58,6 @@ const MusicPlayer = () => {
     if (!Array.isArray(thumbs) || thumbs.length === 0) return '';
     const preferred = thumbs[2]?.url || thumbs[1]?.url || thumbs[0]?.url || '';
     return preferred;
-  };
-  const getBestVideoThumbnail = (videoInfo) => {
-    const thumbs = videoInfo?.videoThumbnails;
-    if (!Array.isArray(thumbs) || thumbs.length === 0) return '';
-    const order = ['maxres', 'maxresdefault', 'sddefault', 'high', 'medium', 'default'];
-    for (const quality of order) {
-      const match = thumbs.find((t) => t?.quality === quality && t?.url);
-      if (match?.url) return match.url;
-    }
-    return thumbs[0]?.url || '';
-  };
-  const buildAudioCandidates = (videoInfo) => {
-    const adaptive = Array.isArray(videoInfo?.adaptiveFormats) ? videoInfo.adaptiveFormats : [];
-    const aacFirst = adaptive
-      .filter((f) => (f?.type || '').toLowerCase().startsWith('audio/') && f?.url)
-      .sort((a, b) => {
-        const aIsAac = (a.type || '').includes('audio/mp4') ? 1 : 0;
-        const bIsAac = (b.type || '').includes('audio/mp4') ? 1 : 0;
-        if (aIsAac !== bIsAac) return bIsAac - aIsAac;
-        return Number(b.bitrate || 0) - Number(a.bitrate || 0);
-      })
-      .map((f) => f.url);
-    return [...new Set(aacFirst)];
-  };
-  const handleXtags = (audioStreams) => {
-    const isOriginal = (s) => !(s?.url || '').includes('acont%3Ddubbed');
-    return audioStreams.filter(isOriginal);
-  };
-  const getSupportsOpus = async () => {
-    if (supportsOpusRef.current !== null) return supportsOpusRef.current;
-    try {
-      const result = await navigator.mediaCapabilities?.decodingInfo?.({
-        type: 'file',
-        audio: { contentType: 'audio/webm;codecs=opus' },
-      });
-      supportsOpusRef.current = Boolean(result?.supported);
-    } catch {
-      supportsOpusRef.current = true;
-    }
-    return supportsOpusRef.current;
-  };
-  const preferredStream = async (audioStreams, quality = 'medium') => {
-    const supportsOpus = await getSupportsOpus();
-    const preferredCodec = supportsOpus ? 'aac' : 'aac';
-    const itagsByQuality = {
-      worst: { opus: [600, 249, 251], aac: [599, 139, 140] },
-      low: { opus: [249, 600, 251], aac: [139, 599, 140] },
-      medium: { opus: [250, 249, 251], aac: [140, 139, 599] },
-      high: { opus: [251], aac: [140, 141, 139] },
-    };
-    const tagOrder = itagsByQuality[quality]?.[preferredCodec] || itagsByQuality.medium[preferredCodec];
-    for (const itag of tagOrder) {
-      const match = audioStreams.find((s) => (s?.url || '').includes(`itag=${itag}`));
-      if (match?.url) return match;
-    }
-    return audioStreams[0] || null;
-  };
-  const replaceOriginWithProxy = (url, proxyOrigin) => {
-    try {
-      const parsed = new URL(url);
-      return url.replace(parsed.origin, proxyOrigin);
-    } catch {
-      return url;
-    }
-  };
-  const getStreamData = async (videoId) => {
-    const fetchData = async (host) => {
-      const res = await fetch(`${host}/api/v1/videos/${videoId}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!data || !Array.isArray(data.adaptiveFormats)) {
-        throw new Error('Invalid response: adaptiveFormats missing');
-      }
-      return data;
-    };
-    let lastError = null;
-    for (const instance of STREAM_INSTANCES) {
-      try {
-        const data = await fetchData(instance);
-        return { data, instance };
-      } catch (e) {
-        lastError = e;
-      }
-    }
-    throw lastError || new Error('All instances failed');
   };
   const formatTime = (secs) => {
     if (!Number.isFinite(secs)) return '0:00';
@@ -271,7 +181,7 @@ const MusicPlayer = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${SEARCH_URL}?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`http://127.0.0.1:5000/api/audio?q=${encodeURIComponent(searchQuery)}`);
       const json = await response.json();
 
       if (!response.ok) {
