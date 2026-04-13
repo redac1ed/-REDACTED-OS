@@ -1,6 +1,12 @@
 import { execSync } from 'child_process';
 
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
   const { v: videoId, q: query, f } = req.query;
   if (typeof query === 'string' && query.trim()) {
     try {
