@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import ytdlp from 'yt-dlp-exec';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,13 +26,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing parameters. Use ?q=QUERY for search or ?v=VIDEO_ID for audio.' });
   }
   try {
-    const output = execSync(
-      `yt-dlp -f bestaudio -j https://www.youtube.com/watch?v=${videoId}`,
-      { encoding: 'utf-8', timeout: 30000 }
-    );
-    const data = JSON.parse(output);
-    const url = data.url;
-    const title = data.title;
+    const data = await ytdlp(`https://www.youtube.com/watch?v=${videoId}`, {
+      format: 'bestaudio',
+      dumpSingleJson: true,
+      noWarnings: true,
+      noCallHome: true,
+      preferFreeFormats: true,
+      youtubeSkipDashManifest: true,
+    });
+    const url = data?.url;
+    const title = data?.title;
     if (url) {
       return res.status(200).json({
         video_id: videoId,
