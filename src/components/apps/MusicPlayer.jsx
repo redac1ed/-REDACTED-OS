@@ -428,6 +428,7 @@ const MusicPlayer = () => {
               ref={audioRef}
               key={currentAudioUrl || 'expanded-empty'}
               src={currentAudioUrl || ''}
+              crossOrigin="anonymous"
               autoPlay
               preload="metadata"
               className="mp-audio-hidden"
@@ -562,6 +563,7 @@ const MusicPlayer = () => {
           ref={audioRef}
           key={currentAudioUrl || 'empty'}
           src={currentAudioUrl || ''}
+          crossOrigin="anonymous"
           autoPlay
           preload="metadata"
           className="mp-audio-hidden"
