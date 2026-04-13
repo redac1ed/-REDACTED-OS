@@ -1,5 +1,5 @@
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import parse_qs, urlencode, urlparse, quote
+from urllib.parse import parse_qs, urlencode, urlparse, quote, unquote
 from urllib.request import Request, urlopen
 import json
 
@@ -30,15 +30,16 @@ class handler(BaseHTTPRequestHandler):
         stream_url = (query.get("stream", [""])[0] or "").strip()
 
         if stream_url:
-            if not stream_url.startswith("http"):
-                self._send_json(400, {"error": "Invalid stream URL"})
-                return
             try:
+                decoded_url = unquote(stream_url)
+                if not decoded_url.startswith("http"):
+                    self._send_json(400, {"error": "Invalid stream URL"})
+                    return
                 upstream_headers = {"User-Agent": "Mozilla/5.0"}
                 range_header = self.headers.get("Range")
                 if range_header:
                     upstream_headers["Range"] = range_header
-                req = Request(stream_url, headers=upstream_headers)
+                req = Request(decoded_url, headers=upstream_headers)
                 with urlopen(req, timeout=30) as resp:
                     self.send_response(resp.status)
                     self._set_cors_headers()
@@ -110,7 +111,7 @@ class handler(BaseHTTPRequestHandler):
                         if url not in audio_urls:
                             audio_urls.append(url)
                 if audio_urls:
-                    proxied_urls = [f"/api/api?stream={quote(url, safe='')}" for url in audio_urls]
+                    proxied_urls = [f"/api/api?stream={quote(url, safe=':/?&#=')}" for url in audio_urls]
                     self._send_json(200, {
                         "video_id": video_id,
                         "title": title,
