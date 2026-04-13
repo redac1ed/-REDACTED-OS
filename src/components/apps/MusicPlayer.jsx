@@ -181,9 +181,8 @@ const MusicPlayer = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/api?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(` http://127.0.0.1:5000/api/audio?q=${encodeURIComponent(searchQuery)}`);
       const json = await response.json();
-
       if (!response.ok) {
         throw new Error('Search failed');
       }
@@ -214,7 +213,6 @@ const MusicPlayer = () => {
           };
           return mappedTrack;
         });
-
       setResults(newResults);
     } catch (err) {
       setError(err.message);
@@ -234,7 +232,7 @@ const MusicPlayer = () => {
       playbackSnapshotRef.current = { time: 0, wasPlaying: false, volume, url: '' };
       setCurrentTime(0);
       setDuration(0);
-      const proxyResponse = await fetch(`/api/api?v=${track.videoId}`);
+      const proxyResponse = await fetch(`http://127.0.0.1:5000/api/audio?v=${track.videoId}`);
       if (!proxyResponse.ok) {
         throw new Error(`Proxy error: ${proxyResponse.status}`);
       }
@@ -242,7 +240,7 @@ const MusicPlayer = () => {
       if (!proxyData.url) {
         throw new Error('No audio URL returned from proxy');
       }
-      const candidates = [proxyData.url];
+      const candidates = proxyData.urls && proxyData.urls.length > 0 ? proxyData.urls : [proxyData.url];
       const metaCover = getBestThumbnail(track);
       setCurrentTrack(track);
       setCurrentCoverUrl(metaCover || getBestThumbnail(track));

@@ -70,13 +70,23 @@ class handler(BaseHTTPRequestHandler):
                 with urlopen(req, timeout=20) as resp:
                     data = json.loads(resp.read().decode("utf-8"))
                 title = data.get("title")
-                formats = data.get("adaptiveFormats", [])
-                stream_url = None
-                if formats:
-                    formats.sort(key=lambda x: x.get("bitrate", 0), reverse=True)
-                    stream_url = formats[0]["url"]
-                if stream_url:
-                    self._send_json(200, {"video_id": video_id, "title": title, "url": stream_url})
+                formats = data.get("adaptiveFormats") or data.get("formats") or []
+                audio_urls = []
+                for fmt in formats:
+                    url = fmt.get("url")
+                    mime_type = (fmt.get("mimeType") or fmt.get("mime_type") or "").lower()
+                    if not url:
+                        continue
+                    if ("audio" in mime_type) or ("googlevideo.com" in url):
+                        if url not in audio_urls:
+                            audio_urls.append(url)
+                if audio_urls:
+                    self._send_json(200, {
+                        "video_id": video_id,
+                        "title": title,
+                        "url": audio_urls[0],
+                        "urls": audio_urls,
+                    })
                 else:
                     self._send_json(404, {"error": "No audio URL found"})
                 return
