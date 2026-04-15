@@ -423,29 +423,25 @@ const MusicPlayer = () => {
     setResults([]);
     setError(null);
     try {
-      const response = await fetch(`/api/api?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`https://verome-api.deno.dev/api/search?q=${encodeURIComponent(searchQuery)}`);
       const json = await response.json();
       if (!response.ok) {
         throw new Error('Search failed');
       }
-      const resultsArray = Array.isArray(json) ? json : [];
+      const resultsArray = Array.isArray(json?.results) ? json.results : [];
       const newResults = resultsArray
-        .filter(item => {
-          return Boolean(item?.id) && typeof item?.subtext === 'string' && /view/i.test(item.subtext);
-        })
+        .filter(item => item?.videoId)
         .map((item) => {
-          const durationText = item.duration || '';
-          const artistsToShow = item.author ? [{ name: item.author }] : [{ name: 'Unknown Artist' }];
-          const metaText = item.subtext || [item.author, durationText].filter(Boolean).join(' • ');
-          const thumbUrl = `https://i.ytimg.com/vi_webp/${item.id}/mqdefault.webp`;
+          const thumbUrl = item.thumbnails?.[1]?.url || item.thumbnails?.[0]?.url || `https://i.ytimg.com/vi_webp/${item.videoId}/mqdefault.webp`;
+          const artistsToShow = item.artists?.length > 0 ? item.artists : [{ name: item.author || 'Unknown Artist' }];
           const mappedTrack = {
-            videoId: item.id,
+            videoId: item.videoId,
             title: item.title || 'Untitled',
             artists: artistsToShow,
-            durationText: durationText,
-            subtitle: item.subtext || '',
-            viewsText: item.subtext || '',
-            metaText,
+            durationText: item.duration || '',
+            subtitle: item.subtitle || '',
+            viewsText: '',
+            metaText: item.subtitle || '',
             isExplicit: false,
             thumbnails: [{ url: thumbUrl }, { url: thumbUrl }, { url: thumbUrl }],
             ytify: {
@@ -487,7 +483,7 @@ const MusicPlayer = () => {
       playbackSnapshotRef.current = { time: 0, wasPlaying: false, volume, url: '' };
       setCurrentTime(0);
       setDuration(0);
-      const streamResponse = await fetch(`/api/api?v=${encodeURIComponent(track.videoId)}`);
+      const streamResponse = await fetch(`http://127.0.0.1:5000/api/api?v=${encodeURIComponent(track.videoId)}`);
       if (!streamResponse.ok) {
         throw new Error(`Stream API error: ${streamResponse.status}`);
       }
@@ -498,7 +494,14 @@ const MusicPlayer = () => {
       const candidates = streamData.streamingUrls
         .map((s) => s?.url)
         .filter(Boolean)
-        .map(url => `/api/api?stream=${encodeURIComponent(url)}`);
+        .map(url => {
+          try {
+            const urlObj = new URL(url);
+            return `http://yt.omada.cafe/videoplayback${urlObj.search}`;
+          } catch (e) {
+            return url;
+          }
+        });
       const metaCover = streamData?.metadata?.thumbnail || getBestThumbnail(track);
       setCurrentTrack(track);
       setCurrentCoverUrl(metaCover || getBestThumbnail(track));

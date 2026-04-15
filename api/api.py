@@ -95,7 +95,8 @@ class handler(BaseHTTPRequestHandler):
                 return
             
         if video_id:
-            providers = ["ytify.pp.ua", "lekker.gay", "yt.omada.cafe"]
+            providers = ["yt.omada.cafe"]
+            backup_providers = ["ytify.pp.ua", "lekker.gay"]
             last_error = "No providers attempted"
             for provider in providers:
                 try:
