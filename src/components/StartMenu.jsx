@@ -29,7 +29,7 @@ const APPS = [
   { id: 'vscode', name: 'VS Code', icon: '/icons/vscode.png', component: VSCode },
   { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
   { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
-  { id: 'music', name: 'Music', icon: '/icons/minecraft.png', component: MusicPlayer   },
+  { id: 'music', name: 'Music', icon: '/icons/music.png', component: MusicPlayer   },
 ]
 
 export default function StartMenu({ isOpen, onToggle, onAppClick, onLock }) {

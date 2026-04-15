@@ -10,6 +10,7 @@ const PRECACHE_URLS = [
   '/icons/doom.png',
   '/icons/libreoffice.jpg',
   '/icons/minecraft.png',
+  '/icons/music.png',
 ]
 const V86_URLS = [
   '/v86/libv86.js',

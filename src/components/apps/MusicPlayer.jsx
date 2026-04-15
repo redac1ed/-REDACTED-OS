@@ -487,7 +487,7 @@ const MusicPlayer = () => {
       playbackSnapshotRef.current = { time: 0, wasPlaying: false, volume, url: '' };
       setCurrentTime(0);
       setDuration(0);
-      const streamResponse = await fetch(`/api/api?v=${encodeURIComponent(track.videoId)}`);
+      const streamResponse = await fetch(`http://127.0.0.1:5000/api/api?v=${encodeURIComponent(track.videoId)}`);
       if (!streamResponse.ok) {
         throw new Error(`Stream API error: ${streamResponse.status}`);
       }
@@ -498,7 +498,7 @@ const MusicPlayer = () => {
       const candidates = streamData.streamingUrls
         .map((s) => s?.url)
         .filter(Boolean)
-        .map(url => `/api/api?stream=${encodeURIComponent(url)}`);
+        .map(url => `http://127.0.0.1:5000/api/api?stream=${encodeURIComponent(url)}`);
       const metaCover = streamData?.metadata?.thumbnail || getBestThumbnail(track);
       setCurrentTrack(track);
       setCurrentCoverUrl(metaCover || getBestThumbnail(track));

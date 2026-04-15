@@ -4,7 +4,7 @@ import { BsBatteryCharging, BsBatteryHalf, BsBatteryFull } from "react-icons/bs"
 import { IoVolumeLow, IoVolumeMedium, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { useUser } from '../contexts/UserContext';  
 
-const SYS_TRAY_ICON_SIZE = 18
+const SYS_TRAY_ICON_SIZE = 20
 const SysWifi = ({ level }) => {
   switch (level) {
     case 'off':
@@ -75,6 +75,8 @@ export default function Taskbar({
   const [wifiName, setWifiName] = useState('WiFi')
   const [draggedApp, setDraggedApp] = useState(null)
   const [hoveredAppKey, setHoveredAppKey] = useState(null)
+  const [delayedHoveredKey, setDelayedHoveredKey] = useState(null)
+  const hoverTimeoutRef = useRef(null)
   const [wifiLevel, setWifiLevel] = useState('high') 
   const {volume} = useUser()
   const wasOnlineRef = useRef(navigator.onLine)
@@ -172,14 +174,19 @@ export default function Taskbar({
           boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
         }
       : undefined
-  const renderHoverOverlay = (label) => (
+  const renderHoverOverlay = (label, key) => (
     <>
+      <style>{`
+        @keyframes fadeInSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+      `}</style>
       <div
         className='taskbar-hover-overlay'
         style={{
           position: 'absolute',
           left: '50%',
-          transform: 'translateX(-50%)',
           bottom: 'calc(100% + 18px)',
           background: 'rgba(20, 20, 24, 0.96)',
           color: '#fff',
@@ -188,6 +195,8 @@ export default function Taskbar({
           fontSize: '15px',
           whiteSpace: 'nowrap',
           zIndex: 20000,
+          pointerEvents: 'none',
+          animation: 'fadeInSlideUp 0.15s ease-out forwards',
         }}
       >
         {label}
@@ -212,8 +221,21 @@ export default function Taskbar({
     <>
       <div className="taskbar" onMouseDown={(e) => e.stopPropagation()}>
         <div className="taskbar-center">
-          <button className="start-button" onClick={onStartClick} title="Start">
+          <button className="start-button" onClick={onStartClick}
+            style={{ position: 'relative' }}
+            onMouseEnter={() => {
+              hoverTimeoutRef.current = setTimeout(() => setDelayedHoveredKey('start'), 300);
+            }}
+            onMouseLeave={() => {
+              if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+                hoverTimeoutRef.current = null;
+              }
+              setDelayedHoveredKey(null);
+            }}
+          >
             <img src="/icons/windows-11.png" alt="Windows"/>
+            {delayedHoveredKey === 'start' && renderHoverOverlay('Start', 'start')}
           </button>
           <div className="taskbar-icons" style={{ display: 'flex' }}>
             {pinnedApps.map((app) => {
@@ -232,13 +254,29 @@ export default function Taskbar({
                       onLaunchApp(app)
                     }
                   }}
-                  onMouseEnter={() => setHoveredAppKey(`pin-${app.id}`)}
-                  onMouseLeave={() => setHoveredAppKey((prev) => (prev === `pin-${app.id}` ? null : prev))}
+                  onMouseEnter={() => {
+                    setHoveredAppKey(`pin-${app.id}`);
+                    hoverTimeoutRef.current = setTimeout(() => setDelayedHoveredKey(`pin-${app.id}`), 300);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredAppKey((prev) => (prev === `pin-${app.id}` ? null : prev));
+                    if (hoverTimeoutRef.current) {
+                      clearTimeout(hoverTimeoutRef.current);
+                      hoverTimeoutRef.current = null;
+                    }
+                    setDelayedHoveredKey(null);
+                  }}
                   onContextMenu={(e) => handleContext(e, app)}
                   aria-label={app.name}
                   draggable
                   onDragStart={() => setDraggedApp(app)}
-                  onDragEnd={() => setHoveredAppKey(null)}
+                  onDragEnd={() => {
+                    setHoveredAppKey(null);
+                    setDelayedHoveredKey(null);
+                    if (hoverTimeoutRef.current) {
+                      clearTimeout(hoverTimeoutRef.current);
+                    }
+                  }}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault()
@@ -258,7 +296,7 @@ export default function Taskbar({
                   <div className="taskbar-app-icon">
                     {app.icon ? <img src={app.icon} alt={app.name} /> : app.name[0]}
                   </div>
-                  {hoveredAppKey === `pin-${app.id}` && renderHoverOverlay(app.name)}
+                  {delayedHoveredKey === `pin-${app.id}` && renderHoverOverlay(app.name, `pin-${app.id}`)}
                   {openWin && <div className="taskbar-indicator" />}
                 </button>
               )
@@ -271,8 +309,18 @@ export default function Taskbar({
                   className={`taskbar-btn taskbar-app has-window ${isActive ? 'active' : ''} ${win.minimized ? 'minimized' : ''} ${hoveredAppKey === `win-${win.id}` ? 'is-hovered' : ''}`}
                   style={getAppHoverStyle(`win-${win.id}`)}
                   onClick={() => onWindowClick(win.id)}
-                  onMouseEnter={() => setHoveredAppKey(`win-${win.id}`)}
-                  onMouseLeave={() => setHoveredAppKey((prev) => (prev === `win-${win.id}` ? null : prev))}
+                  onMouseEnter={() => {
+                    setHoveredAppKey(`win-${win.id}`);
+                    hoverTimeoutRef.current = setTimeout(() => setDelayedHoveredKey(`win-${win.id}`), 300);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredAppKey((prev) => (prev === `win-${win.id}` ? null : prev));
+                    if (hoverTimeoutRef.current) {
+                      clearTimeout(hoverTimeoutRef.current);
+                      hoverTimeoutRef.current = null;
+                    }
+                    setDelayedHoveredKey(null);
+                  }}
                   onContextMenu={(e) => handleContext(e, win)}
                   aria-label={win.title}
                 >
@@ -283,7 +331,7 @@ export default function Taskbar({
                       <span style={{ fontSize: '16px' }}>⌘</span>
                     )}
                   </div>
-                  {hoveredAppKey === `win-${win.id}` && renderHoverOverlay(win.title)}
+                  {delayedHoveredKey === `win-${win.id}` && renderHoverOverlay(win.title, `win-${win.id}`)}
                   <div className="taskbar-indicator" />
                 </button>
               )
@@ -311,8 +359,18 @@ export default function Taskbar({
             className="taskbar-clock"
             onClick={onCalendarClick}
             aria-label="Calendar"
-            onMouseEnter={() => setHoveredRightKey('clock')}
-            onMouseLeave={() => setHoveredRightKey((prev) => (prev === 'clock' ? null : prev))}
+            onMouseEnter={() => {
+              setHoveredRightKey('clock');
+              hoverTimeoutRef.current = setTimeout(() => setDelayedHoveredKey('clock'), 300);
+            }}
+            onMouseLeave={() => {
+              setHoveredRightKey((prev) => (prev === 'clock' ? null : prev));
+              if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+                hoverTimeoutRef.current = null;
+              }
+              setDelayedHoveredKey(null);
+            }}
             style={{
               position: 'relative',
               ...(hoveredRightKey === 'clock'
@@ -322,17 +380,27 @@ export default function Taskbar({
           >
             <span className="tb-time">{shortTime}</span>
             <span className="tb-date">{shortDate}</span>
-            {hoveredRightKey === 'clock' && renderHoverOverlay('Calendar')}
+            {delayedHoveredKey === 'clock' && renderHoverOverlay('Calendar', 'clock')}
           </div>
           <div
             className="tb-show-desktop"
             onClick={onShowDesktop}
             aria-label="Show desktop"
-            onMouseEnter={() => setHoveredRightKey('desktop')}
-            onMouseLeave={() => setHoveredRightKey((prev) => (prev === 'desktop' ? null : prev))}
+            onMouseEnter={() => {
+              setHoveredRightKey('desktop');
+              hoverTimeoutRef.current = setTimeout(() => setDelayedHoveredKey('desktop'), 300);
+            }}
+            onMouseLeave={() => {
+              setHoveredRightKey((prev) => (prev === 'desktop' ? null : prev));
+              if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+                hoverTimeoutRef.current = null;
+              }
+              setDelayedHoveredKey(null);
+            }}
             style={{ position: 'relative' }}
           >
-            {hoveredRightKey === 'desktop' && renderHoverOverlay('Show desktop')}
+            {delayedHoveredKey === 'desktop' && renderHoverOverlay('Show desktop', 'desktop')}
           </div>
         </div>
       </div>

@@ -1,16 +1,16 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  MdWifi, 
   MdBluetooth, 
   MdAirplaneTicket, 
-  MdBatteryChargingFull, 
-  MdWbSunny, 
-  MdVolumeUp,
+  MdWbSunny,
   MdSettings,
   MdKeyboardArrowRight,
   MdNightlight,
   MdAccessibilityNew
 } from 'react-icons/md';
+import { LuWifi, LuWifiHigh, LuWifiLow, LuWifiOff } from "react-icons/lu";
+import { BsBatteryCharging, BsBatteryHalf, BsBatteryFull } from "react-icons/bs";
+import { IoVolumeLow, IoVolumeMedium, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { useUser } from '../contexts/UserContext';
 
 export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
@@ -21,11 +21,27 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
   const [saver, setSaver] = useState(false);
   const [wifiName, setWifiName] = useState('WiFi');
   const [batteryLevel, setBatteryLevel] = useState(null);
+  const [wifiLevel, setWifiLevel] = useState('high');
+  const [batteryCharging, setBatteryCharging] = useState(false);
+  const getWifiLevelFromConnection = () => {
+    if (!navigator.onLine) return 'off'
+    const conn = navigator.connection
+    if (!conn) return 'high'
+    const downlink = conn.downlink ?? 0
+    if (downlink < 1) return 'zero'
+    if (downlink < 5) return 'low'
+    if (downlink < 20) return 'high'
+    return 'full'
+  }
   useEffect(() => {
      if ('getBattery' in navigator) {  
         navigator.getBattery().then(bat => {
             setBatteryLevel(Math.round(bat.level * 100));
-            const updateBattery = () => setBatteryLevel(Math.round(bat.level * 100));
+            setBatteryCharging(bat.charging);
+            const updateBattery = () => {
+              setBatteryLevel(Math.round(bat.level * 100));
+              setBatteryCharging(bat.charging);
+            };
             bat.addEventListener('levelchange', updateBattery);
             bat.addEventListener('chargingchange', updateBattery);
         }).catch(err => console.error(err));
@@ -45,6 +61,7 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
          } else {
            setWifiName(navigator.onLine ? 'Network Connected' : 'No Internet');
          }
+         setWifiLevel(getWifiLevelFromConnection());
       };
       if (typeof navigator.connection.addEventListener === 'function') {
         navigator.connection.addEventListener('change', updateWifi);
@@ -58,6 +75,39 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
     return undefined;
   }, [isOpen]);
   if (!isOpen) return null;
+  const getWifiIcon = () => {
+    switch (wifiLevel) {
+      case 'off':
+        return <LuWifiOff size={20} />;
+      case 'zero':
+        return <LuWifiLow size={20} />;
+      case 'low':
+        return <LuWifiHigh size={20} />;
+      case 'high':
+      case 'full':
+      default:
+        return <LuWifi size={20} />;
+    }
+  };
+  const getVolumeIcon = () => {
+    if (volume === 0) return <IoVolumeMute size={20} />;
+    if (volume < 33) return <IoVolumeLow size={20} />;
+    if (volume < 66) return <IoVolumeMedium size={20} />;
+    return <IoVolumeHigh size={20} />;
+  };
+  const getBatteryIcon = () => {
+    const safeLevel = Math.max(0, Math.min(100, Number(batteryLevel) || 0))
+    if (batteryCharging) return <BsBatteryCharging size={20} style={{ color: '#86efac' }} />
+    if (safeLevel > 80) return <BsBatteryFull size={20} />
+    return (
+      <BsBatteryHalf 
+        size={20} 
+        style={{ 
+          color: safeLevel <= 15 ? '#f87171' : safeLevel <= 35 ? '#fbbf24' : 'currentColor' 
+        }} 
+      />
+    )
+  };
 
   return (
     <div className="quick-settings-overlay" onClick={onClose}>
@@ -65,7 +115,7 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
         <div className="qs-grid">
           <div className={`qs-item ${wifi ? 'active' : ''}`} onClick={() => setWifi(!wifi)}>
             <div className="qs-icon-wrapper">
-              <MdWifi size={20} />
+              {getWifiIcon()}
               <div className="qs-split-icon"><MdKeyboardArrowRight size={16} /></div>
             </div>
             <span className="qs-label">{wifi ? (wifiName === 'WiFi' ? 'WiFi' : wifiName) : 'Internet'}</span>
@@ -85,7 +135,7 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
           </div>
           <div className={`qs-item ${saver ? 'active' : ''}`} onClick={() => setSaver(!saver)}>
             <div className="qs-icon-wrapper">
-              <MdBatteryChargingFull size={20} />
+              {getBatteryIcon()}
             </div>
             <span className="qs-label">Battery saver</span>
           </div>
@@ -119,7 +169,7 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
             </div>
           </div>
           <div className="qs-slider-group">
-            <MdVolumeUp size={20} className="qs-slider-icon" />
+            {getVolumeIcon()}
             <div className="qs-slider-container">
               <div className="qs-slider-track" />
               <div className="qs-slider-fill" style={{ width: `${volume}%` }} />
@@ -129,11 +179,11 @@ export default function QuickSettings({ isOpen, onClose, onOpenSettings }) {
         </div>
         <div className="qs-footer" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: '12px', opacity: 0.8 }}>
           <div className="qs-battery" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MdBatteryChargingFull size={16} />
+            {getBatteryIcon()}
             <span>{batteryLevel !== null ? batteryLevel + '%' : 'Unknown'}</span>
           </div>
           <div className="qs-footer-btns" style={{ display: 'flex', gap: '16px' }}>
-             <MdSettings size={16} style={{ cursor: 'pointer' }} onClick={onOpenSettings} />
+             <MdSettings size={20} style={{ cursor: 'pointer' }} onClick={onOpenSettings} />
           </div>
         </div>
       </div>

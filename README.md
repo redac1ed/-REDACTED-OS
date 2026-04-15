@@ -41,6 +41,12 @@ Alternatively, you can deploy it to Vercel:
 ### Notes
 TBD
 
+## Dependencies
+
+I also used other repositories for the functions of this project, they are mentioned below:
+- [v86](https://github.com/copy/v86), used in the terminal app. 
+- [c2-sans-fight](https://github.com/sans-simulator/c2-sans-fight), used in the Sans fight for the puzzle.
+
 ## License
 
 This project is open source and available under the MIT License.
