@@ -483,7 +483,7 @@ const MusicPlayer = () => {
       playbackSnapshotRef.current = { time: 0, wasPlaying: false, volume, url: '' };
       setCurrentTime(0);
       setDuration(0);
-      const streamResponse = await fetch(`/api/api?v=${encodeURIComponent(track.videoId)}`);
+      const streamResponse = await fetch(`http://127.0.0.1:5000/api/api?v=${encodeURIComponent(track.videoId)}`);
       if (!streamResponse.ok) {
         throw new Error(`Stream API error: ${streamResponse.status}`);
       }
@@ -604,7 +604,7 @@ const MusicPlayer = () => {
             >
               {playLoadingId === track.videoId && (
                 <div className="mp-song-loading">
-                  ⏳ Loading...
+                  <div className="mp-loading-spinner" />
                 </div>
               )}
               <div className="mp-thumb-wrap">

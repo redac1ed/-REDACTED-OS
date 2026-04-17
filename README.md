@@ -46,6 +46,7 @@ TBD
 I also used other repositories for the functions of this project, they are mentioned below:
 - [v86](https://github.com/copy/v86), used in the terminal app. 
 - [c2-sans-fight](https://github.com/sans-simulator/c2-sans-fight), used in the Sans fight for the puzzle.
+- [scramjet](https://github.com/MercuryWorkshop/scramjet), used in the browser app.
 
 ## License
 

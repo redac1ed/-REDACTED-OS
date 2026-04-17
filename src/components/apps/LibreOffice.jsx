@@ -1,9 +1,25 @@
+import { useState, useEffect } from 'react'
+
 export default function LibreOffice() {
+  const [iframeUrl, setIframeUrl] = useState('')
+  const handleSubmit = async () => {
+    const res = await fetch(`http://127.0.0.1:5000/api/api?url=https://cryptpad.fr`)
+    const data = await res.json()
+    if (data?.url) {
+      setIframeUrl(data.url)
+    } else {
+      console.error("No url field in response:", data)
+    }
+  }
+  useEffect(() => {
+    handleSubmit()
+  }, [])
+  
   return (
     <div className="chrome-app">
       <div className="chrome-content" style={{ height: '100%' }}>
         <iframe
-          src="https://etherpad.org/"  
+          src={iframeUrl}  
           title="LibreOffice"
           referrerPolicy="no-referrer"
           allow="accelerometer; autoplay; clipboard-read; clipboard-write; encrypted-media; gyroscope; picture-in-picture; display-capture; camera; microphone; fullscreen"

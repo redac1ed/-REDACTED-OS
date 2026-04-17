@@ -7,12 +7,12 @@ import LibreOffice from './apps/LibreOffice'
 import Minecraft from './apps/Minecraft'
 
 const INITIAL_APPS = [
-  { id: 'browser', name: 'Chrome', icon: 'https://img.icons8.com/fluency/48/chrome.png', component: Browser },
-  { id: 'terminal', name: 'Terminal', icon: 'https://img.icons8.com/fluency/48/console.png', component: Terminal },
-  { id: 'vscode', name: 'VS Code', icon: 'https://img.icons8.com/?id=0OQR1FYCuA9f&format=png', component: VSCode },
-  { id: 'doom', name: 'Doom', icon: 'https://img.icons8.com/?id=e7DUzb65WlzN&format=png', component: Doom },
-  { id: 'libreoffice', name: 'LibreOffice', icon: 'https://img.icons8.com/?id=jUEbKTar71TV&format=jpg', component: LibreOffice },
-  { id: 'minecraft', name: 'Minecraft', icon: 'https://img.icons8.com/?id=aFKNWWquUYRN&format=png', component: Minecraft },
+  { id: 'browser', name: 'Chrome', icon: '/icons/chrome.png', component: Browser },
+  { id: 'terminal', name: 'Terminal', icon: '/icons/terminal.png', component: Terminal },
+  { id: 'vscode', name: 'VS Code', icon: '/icons/vscode.png', component: VSCode },
+  { id: 'doom', name: 'Doom', icon: '/icons/doom.png', component: Doom },
+  { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
+  { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
 ]
 
 export default function DesktopIcons({ onDoubleClick, savedPositions = {}, onPositionsChange = () => {} }) {
