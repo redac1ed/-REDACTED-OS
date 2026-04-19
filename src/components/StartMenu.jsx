@@ -14,6 +14,7 @@ const VSCode = lazy(() => import('./apps/VSCode'))
 const LibreOffice = lazy(() => import('./apps/LibreOffice'))
 const Minecraft = lazy(() => import('./apps/Minecraft'))
 const MusicPlayer = lazy(() => import('./apps/MusicPlayer'))
+const Puzzle = lazy(() => import('./apps/Puzzle'))
 
 const APPS = [
   { id: 'profile', name: 'Profile', icon: '/icons/profile.png', component: Profile },
@@ -30,7 +31,7 @@ const APPS = [
   { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
   { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
   { id: 'music', name: 'Music', icon: '/icons/music.png', component: MusicPlayer },
-  { id: 'puzzle', name: 'Puzzle Game', icon: '/icons/music.png' },
+  { id: 'puzzle', name: 'Logs', icon: '/icons/puzzle.png', component: Puzzle },
 ]
 
 export default function StartMenu({ isOpen, onToggle, onAppClick, onLock }) {
