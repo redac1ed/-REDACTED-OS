@@ -4,11 +4,6 @@
   "outputDirectory": "dist",
   "installCommand": "bun install",
   "framework": null,
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3"
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
