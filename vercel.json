@@ -4,19 +4,21 @@
   "outputDirectory": "dist",
   "installCommand": "bun install",
   "framework": null,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/woanlew2933/janleil3n/sans-fight/?$",
-      "dest": "/woanlew2933/janleil3n/sans-fight/index.html"
-    }
-  ],
   "rewrites": [
     {
-      "source": "/((?!api/|woanlew2933/janleil3n|skibidilink/).*)",
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/woanlew2933/janleil3n/sans-fight",
+      "destination": "/woanlew2933/janleil3n/sans-fight/index.html"
+    },
+    {
+      "source": "/woanlew2933/janleil3n/sans-fight/",
+      "destination": "/woanlew2933/janleil3n/sans-fight/index.html"
+    },
+    {
+      "source": "/((?!api/|woanlew2933/janleil3n/sans-fight|skibidilink/).*)",
       "destination": "/index.html"
     }
   ],

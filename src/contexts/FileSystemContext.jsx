@@ -21,19 +21,24 @@ const INITIAL_FS = {
       children: {
         'note.txt': { type: 'txt', content: `Here are all the easter eggs you can find!
 
- Open up the terminal and run rm -rf / --no-preserve-root. It would load a video that would run indefinitely unless you do not remove the cookie for this.
+ There is a puzzle app, where you need the password.
+
+ To find the password, you need to play the sans iconic fight on the url that is outputted in the console.
+
+ After you get the pin, you can enter it in the puzzle app.
+
+ I don't think I need to spoil the secret of what is contained there.
 
  more coming soon!
 ` },
-        'troubleshoots.txt': { type: 'txt', content: `Sometimes, while using Browser or LibreOffice, you might face some errors, to which some fixes are:
+        'troubleshoots.txt': { type: 'txt', content: `Sometimes, while using Browser, LibreOffice or Music, you might face some errors, to which some fixes are:
 
-No resources left: Many people are using them, that means you would not be able to use it unless the current users exit it.
-
-Something went wrong: This might be your network issue or a server-side one, it should resolve in about 4-5 minutes.
+Takes a lot of time: It might be your internet speed or connectivity issue.
+Does not load at all: This might be your network issue or a server-side one, it should resolve in about 4-5 minutes.
+Failed to stream: This is also a common issue, indicating that the streaming server is overloaded or facing issues. Just wait a bit and try again!
 
 If you encounter any other errors, then its just a matter of time till I personally try fixing it.
-
-PS: These apps are pretty heavy, so they might take some time to load.` }
+` }
       }
     },
     Downloads: {
@@ -65,7 +70,7 @@ PS: These apps are pretty heavy, so they might take some time to load.` }
 };
 
 export const FileSystemProvider = ({ children }) => {
-  const fs = useState(INITIAL_FS);
+  const [fs, setFs] = useState(INITIAL_FS);
   const getNode = useCallback((pathArray) => {
     let current = fs;
     for (const key of pathArray) {

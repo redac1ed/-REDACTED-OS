@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 export default function LibreOffice() {
   const [iframeUrl, setIframeUrl] = useState('')
   const handleSubmit = async () => {
-    const res = await fetch(`http://127.0.0.1:5000/api/api?url=https://cryptpad.fr`)
+    const res = await fetch(`/api/api?url=https://cryptpad.fr`)
     const data = await res.json()
     if (data?.url) {
       setIframeUrl(data.url)
