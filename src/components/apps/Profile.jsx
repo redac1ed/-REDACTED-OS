@@ -3,7 +3,7 @@ export default function Profile() {
     <div className="chrome-app">
       <div className="chrome-content" style={{ height: '100%' }}>
         <iframe
-          src="https://me.redac.me"
+          src="https://redac.me"
           title="Profile"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
