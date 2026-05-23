@@ -38,15 +38,11 @@ Alternatively, you can deploy it to Vercel:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2F%5BREDACTED%5D%2F%5BREDACTED%5D-os) 
 
-### Notes
-TBD
-
 ## Dependencies
 
 I also used other repositories for the functions of this project, they are mentioned below:
 - [v86](https://github.com/copy/v86), used in the terminal app. 
 - [c2-sans-fight](https://github.com/sans-simulator/c2-sans-fight), used in the Sans fight for the puzzle.
-- [scramjet](https://github.com/MercuryWorkshop/scramjet), used in the browser app.
 
 ## License
 
