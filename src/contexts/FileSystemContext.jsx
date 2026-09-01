@@ -19,18 +19,6 @@ const INITIAL_FS = {
     Documents: {
       type: 'folder',
       children: {
-        'note.txt': { type: 'txt', content: `Here are all the easter eggs you can find!
-
- There is a puzzle app, where you need the password.
-
- To find the password, you need to play the sans iconic fight on the url that is outputted in the console.
-
- After you get the pin, you can enter it in the puzzle app.
-
- I don't think I need to spoil the secret of what is contained there.
-
- more coming soon!
-` },
         'troubleshoots.txt': { type: 'txt', content: `Sometimes, while using Browser, LibreOffice or Music, you might face some errors, to which some fixes are:
 
 Takes a lot of time: It might be your internet speed or connectivity issue.

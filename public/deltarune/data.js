@@ -1271,7 +1271,7 @@
                             [3, 1]
                         ]],
                         [64, 24, null, 445635181718071, false, [
-                            [1, [2, "ysdk.features.GameplayAPI.start();"]]
+                               [1, [2, ""]]
                         ]]
                     ],
                     [
@@ -1287,7 +1287,7 @@
                                     [7, [10, [19, 27, [
                                             [23, "Name"]
                                         ]],
-                                        [2, ""]
+                                        [2, "   LV 19"]
                                     ]]
                                 ]]
                             ]
@@ -1379,7 +1379,7 @@
                                     [0, [0, 32]]
                                 ]],
                                 [48, 26, null, 8939946990053354, false, [
-                                    [7, [2, "PRESS X/SHIFT TO FIGHT BACK"]]
+                                    [7, [2, "PRESS X/SHIFT TO QUIT"]]
                                 ]]
                             ]
                         ]
@@ -1780,7 +1780,7 @@
                                             [
                                                 [3, 20, null, 2117610159043014, false, [
                                                     [1, [2, "RunAttack"]],
-                                                    [13, [7, [2, "sans_bonestab1"]]]
+                                                    [13, [7, [2, "sans_bluebone"]]]
                                                 ]],
                                                 [26, 53, null, 2335323764650383, false, [
                                                     [10, 0],
@@ -2354,7 +2354,7 @@
                                     [
                                         [14, 59, null, 4925109422702469, false, [
                                             [10, 4],
-                                            [7, [2, "* is bro cooking"]]
+                                            [7, [2, "* You felt your sins crawling\n  on your back."]]
                                         ]]
                                     ]
                                 ],
@@ -2373,7 +2373,7 @@
                                     [
                                         [14, 59, null, 5244377573294855, false, [
                                             [10, 4],
-                                            [7, [2, "* yeah bro good luck"]]
+                                            [7, [2, "* You feel like you're going to\n  have a bad time."]]
                                         ]]
                                     ],
                                     [
@@ -2417,7 +2417,7 @@
                                     [
                                         [14, 59, null, 2670032810893258, false, [
                                             [10, 4],
-                                            [7, [2, "* wait what happened"]]
+                                            [7, [2, "* Sans is taking a break."]]
                                         ]]
                                     ]
                                 ],
@@ -2431,7 +2431,7 @@
                                     [
                                         [14, 59, null, 3736070576317147, false, [
                                             [10, 4],
-                                            [7, [2, "* ur def getting cooked"]]
+                                            [7, [2, "* The REAL battle finally begins."]]
                                         ]]
                                     ]
                                 ],
@@ -2445,7 +2445,7 @@
                                     [
                                         [14, 59, null, 6589808686267995, false, [
                                             [10, 4],
-                                            [7, [2, "* why are you reading this\n  you moron"]]
+                                            [7, [2, "* Reading this doesn't seem\n  like the best use of time."]]
                                         ]]
                                     ]
                                 ],
@@ -2459,7 +2459,7 @@
                                     [
                                         [14, 59, null, 5769331507923777, false, [
                                             [10, 4],
-                                            [7, [2, "* is sans cooked"]]
+                                            [7, [2, "* Sans is starting to look\n  really tired."]]
                                         ]]
                                     ]
                                 ],
@@ -2589,20 +2589,6 @@
                         [3, 20, null, 522788098430892, false, [
                             [1, [2, "SansText"]],
                             [13, [7, [2, "alright, i guess\nyou win."]],
-                                [7, [2, "PinDialogue"]]
-                            ]
-                        ]]
-                    ]
-                ],
-                [0, null, false, null, 1234567890123456, [
-                        [3, 36, null, 2, false, false, false, 1234567890123457, false, [
-                            [1, [2, "PinDialogue"]]
-                        ]]
-                    ],
-                    [
-                        [3, 20, null, 1234567890123458, false, [
-                            [1, [2, "SansText"]],
-                            [13, [7, [2, "the pin is 293021483\n294083"]],
                                 [7, [2, "Win2"]]
                             ]
                         ]]
@@ -10484,7 +10470,7 @@
                                             [0, [0, 32]]
                                         ]],
                                         [48, 26, null, 349859121287884, false, [
-                                            [7, [2, "PRESS X/SHIFT TO FIGHT BACK"]]
+                                            [7, [2, "PRESS X/SHIFT TO QUIT"]]
                                         ]],
                                         [5, 30, null, 554512315000031, false, [
                                             [2, ["gameover", false]],
@@ -10499,7 +10485,7 @@
                                             [0, [0, 130]]
                                         ]],
                                         [64, 24, null, 627072768583991, false, [
-                                            [1, [2, "ysdk.features.GameplayAPI.stop();"]]
+                                                [1, [2, ""]]
                                         ]]
                                     ]
                                 ]
@@ -10756,10 +10742,10 @@
                     ],
                     [
                         [64, 24, null, 638602796806642, false, [
-                            [1, [2, "ShowAd();"]]
+                               [1, [2, ""]]
                         ]],
                         [64, 24, null, 955885084283007, false, [
-                            [1, [2, "ysdk.features.GameplayAPI.stop();"]]
+                               [1, [2, ""]]
                         ]]
                     ]
                 ],
@@ -11645,9 +11631,9 @@
                 [1, "EndlessStage", 0, 0, false, false, 1966297049622465, false],
                 [1, "PracticeTarget", 0, 60, false, false, 824857649224256, false],
                 [1, "SingleAttack", 1, "", false, false, 9637412728316299, false],
-                [1, "Name", 1, "REDACTED", false, false, 8522084662131715, false],
-                [1, "HP", 0, 100, false, false, 4067313995094888, false],
-                [1, "MaxHP", 0, 100, false, false, 2742940924955148, false],
+                [1, "Name", 1, "[redacted]", false, false, 8522084662131715, false],
+                [1, "HP", 0, 92, false, false, 4067313995094888, false],
+                [1, "MaxHP", 0, 92, false, false, 2742940924955148, false],
                 [1, "KR", 0, 0, false, false, 2189987320058474, false],
                 [1, "KR_T", 0, 0, false, false, 8948293770944489, false]
             ]],
@@ -13436,10 +13422,12 @@
                                     [1, [20, 61, 103, false, null, [
                                         [23, "FileIndex"]
                                     ]]],
-                                    [1, [10, [20, 61, 103, false, null, [
-                                            [23, "FileIndex"]
-                                        ]],
-                                        [2, ".csv"]
+                                    [1, [10, [2, "csv/"],
+                                        [10, [20, 61, 103, false, null, [
+                                                [23, "FileIndex"]
+                                            ]],
+                                            [2, ".csv"]
+                                        ]
                                     ]]
                                 ]],
                                 [-1, 32, null, 3506252319395745, false, [
@@ -13520,10 +13508,12 @@
                                             [1, [20, 61, 103, false, null, [
                                                 [23, "FileIndex"]
                                             ]]],
-                                            [1, [10, [20, 61, 103, false, null, [
-                                                    [23, "FileIndex"]
-                                                ]],
-                                                [2, ".csv"]
+                                            [1, [10, [2, "csv/"],
+                                                [10, [20, 61, 103, false, null, [
+                                                        [23, "FileIndex"]
+                                                    ]],
+                                                    [2, ".csv"]
+                                                ]
                                             ]]
                                         ]]
                                     ]
@@ -13589,7 +13579,7 @@
                             [3, 0]
                         ]],
                         [64, 24, null, 852919608292021, false, [
-                            [1, [2, "ShowAd();"]]
+                               [1, [2, ""]]
                         ]]
                     ]
                 ],
@@ -13663,12 +13653,41 @@
                                 [50, 75, null, 2377617122476924, false, [
                                     [0, [0, 2]]
                                 ]],
-                                [-1, 21, null, 8492232440000000, false, [
-                                    [11, "SimulatorMode"],
-                                    [7, [23, "MODE_NORMAL"]]
+                                [50, 26, null, 6017732506802038, false, [
+                                    [7, [2, "Select your bad time"]]
                                 ]],
-                                [-1, 66, null, 6921132940000000, false, [
-                                    [6, "BattleScreen"]
+                                [50, 258, null, 6681899051898119, false, [
+                                    [3, 1]
+                                ]],
+                                [3, 20, null, 121948490218354, false, [
+                                    [1, [2, "CreateMenuItem"]],
+                                    [13, [7, [0, 0]],
+                                        [7, [0, 192]],
+                                        [7, [0, 96]],
+                                        [7, [0, 0]],
+                                        [7, [2, "Normal"]],
+                                        [7, [2, "MenuModeNormal"]]
+                                    ]
+                                ]],
+                                [3, 20, null, 304790185942551, false, [
+                                    [1, [2, "CreateMenuItem"]],
+                                    [13, [7, [0, 0]],
+                                        [7, [0, 192]],
+                                        [7, [0, 128]],
+                                        [7, [0, 2]],
+                                        [7, [2, "Endless"]],
+                                        [7, [2, "MenuModeEndless"]]
+                                    ]
+                                ]],
+                                [3, 20, null, 326311762535984, false, [
+                                    [1, [2, "CreateMenuItem"]],
+                                    [13, [7, [0, 0]],
+                                        [7, [0, 192]],
+                                        [7, [0, 160]],
+                                        [7, [0, 3]],
+                                        [7, [2, "Single attack"]],
+                                        [7, [2, "MenuModeSingle"]]
+                                    ]
                                 ]]
                             ]
                         ],
@@ -13900,7 +13919,7 @@
                                             [13]
                                         ]],
                                         [64, 24, null, 209345812226368, false, [
-                                            [1, [2, "ysdk.features.LoadingAPI?.ready()"]]
+                                                [1, [2, ""]]
                                         ]]
                                     ],
                                     [

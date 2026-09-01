@@ -10,15 +10,15 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/woanlew2933/janleil3n/sans-fight",
-      "destination": "/woanlew2933/janleil3n/sans-fight/index.html"
+      "source": "/deltarune",
+      "destination": "/deltarune/index.html"
     },
     {
-      "source": "/woanlew2933/janleil3n/sans-fight/",
-      "destination": "/woanlew2933/janleil3n/sans-fight/index.html"
+      "source": "/deltarune/",
+      "destination": "/deltarune/index.html"
     },
     {
-      "source": "/((?!api/)(?!woanlew2933/janleil3n/sans-fight)(?!skibidilink/).*)",
+      "source": "/((?!api/)(?!deltarune/).*)",
       "destination": "/index.html"
     }
   ],

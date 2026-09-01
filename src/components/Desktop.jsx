@@ -13,6 +13,7 @@ const VSCode = lazy(() => import('./apps/VSCode'))
 const Doom = lazy(() => import('./apps/Doom'))
 const LibreOffice = lazy(() => import('./apps/LibreOffice'))
 const Minecraft = lazy(() => import('./apps/Minecraft'))
+const Deltarune = lazy(() => import('./apps/Deltarune'))
 
 const DESKTOP_STATE_KEY = 'win11.desktop.state.v1'
 const APP_CATALOG = [
@@ -22,6 +23,7 @@ const APP_CATALOG = [
   { id: 'doom', name: 'Doom', icon: '/icons/doom.png', component: Doom },
   { id: 'libreoffice', name: 'LibreOffice', icon: '/icons/libreoffice.jpg', component: LibreOffice },
   { id: 'minecraft', name: 'Minecraft', icon: '/icons/minecraft.png', component: Minecraft },
+  { id: 'deltarune', name: 'Deltarune', icon: '/icons/deltarune.png', component: Deltarune },
   { id: 'settings', name: 'Settings', icon: '/icons/settings.png', component: Settings },
 ]
 const APP_BY_ID = APP_CATALOG.reduce((acc, app) => {

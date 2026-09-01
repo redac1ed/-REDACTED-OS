@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="child-src 'self'"/>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Undertale</title>
+    <style>
+        html,
+        body,
+        #c2canvasdiv {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        #c2canvas {
+            display: block;
+            background: #000;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="fb-root"></div>
+    <script>
+        (function() {
+            window.__vol = 0.5;
+            window.__masterGain = null;
+            var __destToGain = new Map();
+            var __origConnect = null;
+            if (typeof AudioNode !== 'undefined') {
+                __origConnect = AudioNode.prototype.connect;
+            }
+            function installConnectPatch() {
+                if (!__origConnect) return;
+                var _c = __origConnect;
+                AudioNode.prototype.connect = function() {
+                    var dest = arguments[0];
+                    if (dest && typeof AudioDestinationNode !== 'undefined' && dest instanceof AudioDestinationNode) {
+                        var mapped = __destToGain.get(dest);
+                        if (mapped) {
+                            arguments[0] = mapped;
+                        } else {
+                            var g = dest.context.createGain();
+                            g.gain.value = window.__vol;
+                            _c.call(g, dest);
+                            __destToGain.set(dest, g);
+                            arguments[0] = g;
+                        }
+                    }
+                    return _c.apply(this, arguments);
+                };
+            }
+            if (__origConnect) installConnectPatch();
+            var _OrigAC = window.AudioContext || window.webkitAudioContext;
+            if (_OrigAC) {
+                window.AudioContext = function() {
+                    var ctx = new _OrigAC();
+                    var g = ctx.createGain();
+                    g.gain.value = window.__vol;
+                    (__origConnect || AudioNode.prototype.connect).call(g, ctx.destination);
+                    __destToGain.set(ctx.destination, g);
+                    window.__masterGain = g;
+                    if (!__origConnect && typeof AudioNode !== 'undefined') {
+                        __origConnect = AudioNode.prototype.connect;
+                        installConnectPatch();
+                    }
+                    return ctx;
+                };
+                window.webkitAudioContext = window.AudioContext;
+            }
+            if (typeof HTMLMediaElement !== 'undefined') {
+                var volDescr = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'volume');
+                if (volDescr) {
+                    var _origSet = volDescr.set;
+                    var _origGet = volDescr.get;
+                    Object.defineProperty(HTMLMediaElement.prototype, 'volume', {
+                        get: function() {
+                            return this.__origVol !== undefined ? this.__origVol : _origGet.call(this);
+                        },
+                        set: function(val) {
+                            this.__origVol = val;
+                            _origSet.call(this, val * window.__vol);
+                        },
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
+            }
+            function applyVolume(v) {
+                window.__vol = v;
+                __destToGain.forEach(function(gain, dest) {
+                    try {
+                        if (gain.context && gain.context.state !== 'closed') {
+                            gain.gain.setTargetAtTime(v, gain.context.currentTime, 0.01);
+                        } else {
+                            __destToGain.delete(dest);
+                        }
+                    } catch(e) {
+                        __destToGain.delete(dest);
+                    }
+                });
+                document.querySelectorAll('audio, video').forEach(function(el) {
+                    if (el.__origVol !== undefined) {
+                        el.volume = el.__origVol;
+                    }
+                });
+            }
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.type === 'OS_VOLUME_CHANGE') {
+                    applyVolume(e.data.volume / 100);
+                }
+            });
+        })();
+        (function() {
+            if (window.location.protocol.substr(0, 4) === "file") {
+                alert("Exported games won't work until you upload them. (When running on the file:/// protocol, browsers block many features from working for security reasons.)");
+            }
+        })();
+    </script>
+    <div id="c2canvasdiv">
+        <canvas id="c2canvas" width="640" height="480">
+        <h1>Your browser does not appear to support HTML5.  Try upgrading your browser to the latest version.  <a href="http://www.whatbrowser.org">What is a browser?</a>
+        <br/><br/><a href="http://www.microsoft.com/windows/internet-explorer/default.aspx">Microsoft Internet Explorer</a><br/>
+        <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a><br/>
+        <a href="http://www.google.com/chrome/">Google Chrome</a><br/>
+        <a href="http://www.apple.com/safari/download/">Apple Safari</a></h1>
+        </canvas>
+    </div>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="c2runtime.js"></script>
+    <script>
+        jQuery(document).ready(function() {
+            cr_createRuntime("c2canvas");
+        });
+        function onVisibilityChanged() {
+            if (document.hidden || document.mozHidden || document.webkitHidden || document.msHidden)
+                cr_setSuspended(true);
+            else
+                cr_setSuspended(false);
+        };
+        document.addEventListener("visibilitychange", onVisibilityChanged, false);
+        document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
+        document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
+        document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
+        function OnRegisterSWError(e) {
+            console.warn("Failed to register service worker: ", e);
+        };
+        window.C2_RegisterSW = function C2_RegisterSW() {
+            if (!navigator.serviceWorker)
+                return;
+            try {
+                navigator.serviceWorker.register("sw.js", {
+                        scope: "./"
+                    })
+                    .then(function(reg) {
+                        console.log("Registered service worker on " + reg.scope);
+                    })
+                    .catch(OnRegisterSWError);
+            } catch (e) {
+                OnRegisterSWError(e);
+            }
+        };
+    </script>
+</body>
+</html>

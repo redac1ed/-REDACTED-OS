@@ -7,7 +7,7 @@ A type-of portfolio that is represented through a webOS. Made using React.
 - **Customizable UI** with several themes.
 - **Easter Eggs** in various parts of the WebOS.
 - **Working Browser** with no iFrame block.
-- **Games** like Doom.
+- **Games** like Doom and Undertale.
 - **Animated widgets** like the Start Menu.
 - and much more!
 
@@ -42,7 +42,7 @@ Alternatively, you can deploy it to Vercel:
 
 I also used other repositories for the functions of this project, they are mentioned below:
 - [v86](https://github.com/copy/v86), used in the terminal app. 
-- [c2-sans-fight](https://github.com/sans-simulator/c2-sans-fight), used in the Sans fight for the puzzle.
+- [c2-sans-fight](https://github.com/sans-simulator/c2-sans-fight), used for the local game app.
 
 ## License
 
@@ -50,6 +50,6 @@ This project is open source and available under the MIT License.
 
 ## Authors
 
-Created by [redac1ed](https://github.com/redac1ed). Special thanks to [rupnil.codes](https://github.com/rupnilcodes) for designs.
+Created by [redac1ed](https://github.com/redac1ed).
 
 

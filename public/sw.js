@@ -59,7 +59,7 @@ self.addEventListener('fetch', (event) => {
   if (request.headers.has('range')) {
     return
   }
-  if (url.pathname.includes('/woanlew2933/janleil3n/sans-fight/media/')) {
+  if (url.pathname.includes('/deltarune/media/')) {
     return
   }
   
