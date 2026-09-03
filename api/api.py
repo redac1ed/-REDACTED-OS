@@ -84,7 +84,7 @@ class handler(BaseHTTPRequestHandler):
                 params = {"q": search_query}
                 if search_filter:
                     params["f"] = search_filter
-                upstream_url = f"https://api.ytify.workers.dev/search?{urlencode(params)}"
+                upstream_url = f"https://volume-poor-endorsement-ventures.trycloudflare.com/api/v1/search?{urlencode(params)}"
                 req = Request(upstream_url, headers={"User-Agent": "Mozilla/5.0"})
                 with urlopen(req, timeout=20) as resp:
                     data = json.loads(resp.read().decode("utf-8"))
@@ -95,16 +95,32 @@ class handler(BaseHTTPRequestHandler):
                 return
             
         if video_id:
-            providers = ["yt.omada.cafe"]
-            backup_providers = ["ytify.pp.ua", "lekker.gay"]
+            providers = ["volume-poor-endorsement-ventures.trycloudflare.com"]
+            backup_providers = ["yt.omada.cafe", "ytify.pp.ua", "lekker.gay"]
             last_error = "No providers attempted"
             for provider in providers:
                 try:
+                    companion_stream_url = None
+                    try:
+                        import re, html as pyhtml
+                        watch_url = f"https://{provider}/watch?v={quote(video_id, safe='')}"
+                        wreq = Request(watch_url, headers={"User-Agent": "Mozilla/5.0"})
+                        with urlopen(wreq, timeout=8) as wresp:
+                            whtml = wresp.read().decode("utf-8")
+                        c_matches = re.findall(r'src="(/companion/latest_version[^"]+)"', whtml)
+                        if c_matches:
+                            companion_stream_url = f"https://{provider}{pyhtml.unescape(c_matches[-1])}"
+                    except Exception:
+                        pass
+
                     upstream_url = f"https://{provider}/api/v1/videos/{quote(video_id, safe='')}"
                     req = Request(upstream_url, headers={"User-Agent": "Mozilla/5.0"})       
                     with urlopen(req, timeout=10) as resp:
                         data = json.loads(resp.read().decode("utf-8"))
                     streaming_urls = []
+                    if companion_stream_url:
+                        streaming_urls.append({"url": companion_stream_url})
+
                     adaptive = data.get("adaptiveFormats") or []
                     standard = data.get("formatStreams") or []
                     formats = adaptive + standard
@@ -112,17 +128,22 @@ class handler(BaseHTTPRequestHandler):
                         fmt_type = fmt.get("type", "")
                         if fmt_type.startswith("audio/") or not fmt.get("resolution"):       
                             url = fmt.get("url", "")
-                            if url:
+                            if url and url != companion_stream_url:
                                 streaming_urls.append({"url": url})
                     if not streaming_urls:
                         last_error = f"{provider} returned no audio streams"
                         continue
                     thumbnails = data.get("videoThumbnails") or []
+                    thumb_url = thumbnails[0].get("url") if thumbnails else None
+                    if thumb_url and thumb_url.startswith("/"):
+                        thumb_url = f"https://{provider}{thumb_url}"
+                    elif not thumb_url and video_id:
+                        thumb_url = f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"
                     stream_data = {
                         "success": True,
                         "streamingUrls": streaming_urls,
                         "metadata": {
-                            "thumbnail": thumbnails[0].get("url") if thumbnails else None,   
+                            "thumbnail": thumb_url,
                             "title": data.get("title")
                         }
                     }
@@ -140,3 +161,14 @@ class handler(BaseHTTPRequestHandler):
                 "error": "Missing parameters. Use ?url=URL for browser proxy, ?q=QUERY for search, or ?v=VIDEO_ID for audio."
             },
         )
+
+if __name__ == "__main__":
+    from http.server import ThreadingHTTPServer
+    PORT = 5000
+    server = ThreadingHTTPServer(("127.0.0.1", PORT), handler)
+    print(f"API server running at http://127.0.0.1:{PORT}")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nShutting down server...")
+        server.server_close()

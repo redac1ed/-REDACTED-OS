@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "api": "python api/api.py",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

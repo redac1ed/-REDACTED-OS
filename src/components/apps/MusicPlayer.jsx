@@ -280,14 +280,24 @@ const MusicPlayer = () => {
   }, []);
   const toWsrvImage = (url, width = 480, height = 480) => {
     if (!url) return '';
-    if (String(url).includes('wsrv.nl/')) return url;
-    const normalized = String(url).replace(/^https?:\/\//, '');
+    let fullUrl = String(url).trim();
+    if (fullUrl.includes('wsrv.nl/')) return fullUrl;
+    if (fullUrl.startsWith('/')) {
+      fullUrl = `https://volume-poor-endorsement-ventures.trycloudflare.com${fullUrl}`;
+    }
+    const normalized = fullUrl.replace(/^https?:\/\//, '');
     return `https://wsrv.nl/?url=${encodeURIComponent(normalized)}&w=${width}&h=${height}&fit=cover&output=webp`;
   };
   const getBestThumbnail = (track) => {
+    if (track?.videoId) {
+      return `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
+    }
     const thumbs = track?.thumbnails;
     if (!Array.isArray(thumbs) || thumbs.length === 0) return '';
     const preferred = thumbs[2]?.url || thumbs[1]?.url || thumbs[0]?.url || '';
+    if (preferred.startsWith('/')) {
+      return `https://volume-poor-endorsement-ventures.trycloudflare.com${preferred}`;
+    }
     return preferred;
   };
   const formatTime = (secs) => {
@@ -322,7 +332,7 @@ const MusicPlayer = () => {
     const timeoutId = setTimeout(async () => {
       try {
         setIsFetchingSuggestions(true);
-        const response = await fetch(`https://verome-api.deno.dev/api/search/suggestions?q=${encodeURIComponent(q)}`);
+        const response = await fetch(`https://volume-poor-endorsement-ventures.trycloudflare.com/api/v1/search/suggestions?q=${encodeURIComponent(q)}`);
         if (!response.ok) throw new Error('Suggestion fetch failed');
         const payload = await response.json();
 
@@ -423,16 +433,20 @@ const MusicPlayer = () => {
     setResults([]);
     setError(null);
     try {
-      const response = await fetch(`https://verome-api.deno.dev/api/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`https://volume-poor-endorsement-ventures.trycloudflare.com/api/v1/search?q=${encodeURIComponent(searchQuery)}`);
       const json = await response.json();
       if (!response.ok) {
         throw new Error('Search failed');
       }
-      const resultsArray = Array.isArray(json?.results) ? json.results : [];
+      const resultsArray = Array.isArray(json?.results) ? json.results : (Array.isArray(json) ? json : []);
       const newResults = resultsArray
         .filter(item => item?.videoId)
         .map((item) => {
-          const thumbUrl = item.thumbnails?.[1]?.url || item.thumbnails?.[0]?.url || `https://i.ytimg.com/vi_webp/${item.videoId}/mqdefault.webp`;
+          let rawThumb = item.thumbnails?.[1]?.url || item.thumbnails?.[0]?.url || item.videoThumbnails?.[1]?.url || item.videoThumbnails?.[0]?.url;
+          if (rawThumb && rawThumb.startsWith('/')) {
+            rawThumb = `https://volume-poor-endorsement-ventures.trycloudflare.com${rawThumb}`;
+          }
+          const thumbUrl = rawThumb || `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`;
           const artistsToShow = item.artists?.length > 0 ? item.artists : [{ name: item.author || 'Unknown Artist' }];
           const mappedTrack = {
             videoId: item.videoId,
@@ -483,11 +497,39 @@ const MusicPlayer = () => {
       playbackSnapshotRef.current = { time: 0, wasPlaying: false, volume, url: '' };
       setCurrentTime(0);
       setDuration(0);
-      const streamResponse = await fetch(`/api/api?v=${encodeURIComponent(track.videoId)}`);
-      if (!streamResponse.ok) {
-        throw new Error(`Stream API error: ${streamResponse.status}`);
+      let streamData = null;
+      try {
+        const streamResponse = await fetch(`/api/api?v=${encodeURIComponent(track.videoId)}`);
+        if (streamResponse.ok) {
+          streamData = await streamResponse.json();
+        }
+      } catch (e) {}
+
+      if (!streamData?.success) {
+        try {
+          const directResp = await fetch(`https://volume-poor-endorsement-ventures.trycloudflare.com/api/v1/videos/${encodeURIComponent(track.videoId)}`);
+          if (directResp.ok) {
+            const directData = await directResp.json();
+            const streamingUrls = [];
+            const formats = (directData.adaptiveFormats || []).concat(directData.formatStreams || []);
+            for (const fmt of formats) {
+              const fmtType = fmt?.type || '';
+              if (fmtType.startsWith('audio/') || !fmt?.resolution) {
+                if (fmt?.url) streamingUrls.push({ url: fmt.url });
+              }
+            }
+            streamData = {
+              success: streamingUrls.length > 0,
+              streamingUrls,
+              metadata: {
+                title: directData.title,
+                thumbnail: `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`,
+              }
+            };
+          }
+        } catch (e) {}
       }
-      const streamData = await streamResponse.json();
+
       if (!streamData?.success || !Array.isArray(streamData?.streamingUrls) || streamData.streamingUrls.length === 0) {
         throw new Error('No streaming URLs returned');
       }
@@ -495,9 +537,12 @@ const MusicPlayer = () => {
         .map((s) => s?.url)
         .filter(Boolean)
         .map(url => {
+          if (url.includes('/companion/') || url.includes('volume-poor-endorsement-ventures.trycloudflare.com')) {
+            return url;
+          }
           try {
             const urlObj = new URL(url);
-            return `http://yt.omada.cafe/videoplayback${urlObj.search}`;
+            return `https://volume-poor-endorsement-ventures.trycloudflare.com/videoplayback${urlObj.search}`;
           } catch (e) {
             return url;
           }
@@ -613,6 +658,18 @@ const MusicPlayer = () => {
                   data-raw-src={getBestThumbnail(track) || ''}
                   alt={track.title} 
                   className="mp-thumb"
+                  onError={(e) => {
+                    if (!e.currentTarget.dataset.rawTried && e.currentTarget.dataset.rawSrc) {
+                      e.currentTarget.dataset.rawTried = '1';
+                      e.currentTarget.src = e.currentTarget.dataset.rawSrc;
+                      return;
+                    }
+                    if (track?.videoId) {
+                      e.currentTarget.src = `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
+                      return;
+                    }
+                    e.currentTarget.src = fallbackCover(track.title);
+                  }}
                 />
                 {track.durationText && (
                   <span className="mp-duration">
